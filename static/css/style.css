@@ -1,0 +1,299 @@
+/* Main Styles for TechnovallyCTF */
+
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0 0 30px 30px;
+    margin-top: -1rem;
+    padding: 4rem 0;
+}
+
+.task-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.task-card.border-success {
+    border: 2px solid #28a745;
+    background-color: #f0fff4;
+}
+
+#timer {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.challenge-category {
+    border-left: 4px solid #007bff;
+}
+
+.scoreboard-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.flag-input-group {
+    margin-top: 10px;
+}
+
+.badge-points {
+    font-size: 1.1rem;
+    padding: 8px 12px;
+}
+
+.admin-card {
+    border-left: 4px solid;
+}
+
+.admin-card.task-card {
+    border-left-color: #28a745;
+}
+
+.admin-card.user-card {
+    border-left-color: #17a2b8;
+}
+
+/* Navbar active state */
+.navbar-nav .nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section {
+        padding: 2rem 0;
+    }
+
+    .task-card {
+        margin-bottom: 1rem;
+    }
+
+    #timer {
+        font-size: 1rem;
+    }
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* Disabled button style */
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Table styles */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Card styles */
+.card-header {
+    font-weight: bold;
+}
+
+/* Footer status bar */
+#ctf-status-bar {
+    font-size: 0.9rem;
+    border-top: 2px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+#ctf-status-bar.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+#ctf-status-bar.bg-dark {
+    background-color: #212529 !important;
+}
+
+.nav-link.disabled {
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+}
+
+.nav-link.disabled:hover {
+    color: #6c757d !important;
+}
+
+/* Animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.text-danger.pulse {
+    animation: pulse 1s infinite;
+}
+
+/* Form styles */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Scoreboard chart */
+#scoreChart {
+    max-height: 400px;
+}
+
+/* Alert animations */
+.alert {
+    animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+/* Additional Enhanced Styles for TechnovallyCTF */
+
+/* Glass morphism effects */
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text utility */
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Pulse animation for active CTF */
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+}
+
+.ctf-active-badge {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Stat card hover effect */
+.stat-card {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+}
+
+/* Custom checkbox and radio */
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Loading skeleton */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+/* Scroll reveal animation */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .card-header h4, .card-header h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    .card {
+        background: rgba(30, 41, 59, 0.95);
+        color: #e2e8f0;
+    }
+
+    .text-muted {
+        color: #94a3b8 !important;
+    }
+
+    .table {
+        color: #e2e8f0;
+    }
+
+    .table thead th {
+        background: #1e293b;
+        color: #f1f5f9;
+    }
+
+    .bg-light {
+        background-color: #334155 !important;
+    }
+}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-gear-fill me-2"></i>Task Management Console
+                </h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Task Name</th>
+                                <th>Category</th>
+                                <th>CTF Event</th>
+                                <th class="text-center">Points</th>
+                                <th>Flag</th>
+                                <th class="text-center">📝 Submissions</th>
+                                <th class="text-center">✅ Correct</th>
+                                <th class="text-center">📊 Success Rate</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td class="fw-bold">#{{ task.id }}</td>
+                                <td>
+                                    <strong>{{ task.name }}</strong>
+                                    {% if task.endpoint %}
+                                        <a href="{{ task.endpoint }}" target="_blank" class="text-info ms-1">
+                                            <i class="bi bi-box-arrow-up-right small"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ task.category.name if task.category else 'N/A' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ task.category.ctf_event.name if task.category and task.category.ctf_event else 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark fs-6">{{ task.points }}</span>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <code class="bg-light p-1 rounded">{{ task.flag[:30] }}{% if task.flag|length > 30 %}...{% endif %}</code>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ task.flag }}')">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ task.submissions|length if task.submissions else 0 }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ task.submissions|selectattr('is_correct', 'equalto', true)|list|length if task.submissions else 0 }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% set total = task.submissions|length if task.submissions else 0 %}
+                                    {% set correct = task.submissions|selectattr('is_correct', 'equalto', true)|list|length if task.submissions else 0 %}
+                                    {% set rate = (correct / total * 100)|round|int if total > 0 else 0 %}
+                                    <div class="progress" style="height: 20px; width: 80px;">
+                                        <div class="progress-bar bg-success" style="width: {{ rate }}%" role="progressbar">
+                                            <span class="small">{{ rate }}%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-warning" onclick="editTask({{ task.id }})" title="Edit Task">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a href="{{ url_for('delete_task', task_id=task.id) }}"
+                                           class="btn btn-outline-danger"
+                                           onclick="return confirm('⚠️ Permanently delete "{{ task.name }}"? This cannot be undone!')"
+                                           title="Delete Task">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="10" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-2">No tasks created yet</p>
+                                    <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+                                        <i class="bi bi-plus-lg"></i> Create First Task
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-warning">
+                <h5 class="modal-title text-dark">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Task
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editTaskForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="task_id" id="edit_task_id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Task Name</label>
+                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Endpoint (URL)</label>
+                        <input type="text" name="endpoint" id="edit_endpoint" class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Flag</label>
+                            <input type="text" name="flag" id="edit_flag" class="form-control font-monospace" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Points</label>
+                            <input type="number" name="points" id="edit_points" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <select name="category_id" id="edit_category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            {% for event in events %}
+                                <optgroup label="{{ event.name }}">
+                                    {% for category in event.categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.progress {
+    border-radius: 20px;
+    background-color: #e2e8f0;
+}
+.progress-bar {
+    border-radius: 20px;
+    font-size: 10px;
+    line-height: 20px;
+}
+.table td {
+    vertical-align: middle;
+}
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+</style>
+
+<script>
+function editTask(taskId) {
+    // Fetch task data via AJAX and populate modal
+    $.get(`/admin/task/data/${taskId}`, function(task) {
+        $('#edit_task_id').val(task.id);
+        $('#edit_name').val(task.name);
+        $('#edit_description').val(task.description);
+        $('#edit_endpoint').val(task.endpoint);
+        $('#edit_flag').val(task.flag);
+        $('#edit_points').val(task.points);
+        $('#edit_category_id').val(task.category_id);
+
+        // Update form action
+        $('#editTaskForm').attr('action', `/admin/task/edit/${taskId}`);
+
+        // Show modal
+        $('#editTaskModal').modal('show');
+    }).fail(function() {
+        alert('Failed to load task data');
+    });
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showAlert('success', 'Flag copied to clipboard!', 1500);
+    });
+}
+
+$(document).ready(function() {
+    // Auto-refresh task list every 30 seconds (optional)
+    // setInterval(function() { location.reload(); }, 30000);
+});
+</script>
+{% endblock %}

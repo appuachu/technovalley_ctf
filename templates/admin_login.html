@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient-danger text-white text-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-shield-lock-fill me-2"></i>Admin Portal
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="admin-icon-wrapper">
+                        <i class="bi bi-person-badge display-1 text-danger"></i>
+                    </div>
+                    <p class="text-muted mt-2">Secure administrator access only</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">
+                            <i class="bi bi-person me-1"></i>Admin Username
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-person text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0"
+                                   id="username" name="username"
+                                   placeholder="Enter admin username" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold">
+                            <i class="bi bi-key me-1"></i>Admin Password
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-lock text-muted"></i>
+                            </span>
+                            <input type="password" class="form-control border-start-0"
+                                   id="password" name="password"
+                                   placeholder="Enter admin password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login as Admin
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <a href="{{ url_for('login') }}" class="text-decoration-none">
+                        <i class="bi bi-arrow-left"></i> Back to User Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+.admin-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.input-group-text {
+    background-color: #f8fafc;
+    border-right: none;
+}
+.form-control:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h2 class="mb-2 mb-md-0"><i class="bi bi-flag-fill me-2 text-primary"></i>Challenges</h2>
+            <div id="timer" class="display-6"></div>
+        </div>
+
+        {% for category_data in categories %}
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-folder2-open me-2"></i>
+                    {{ category_data.category.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    {% for task in category_data.tasks %}
+                    <div class="col-md-6">
+                        <div class="card h-100 task-card {% if task.submitted %}border-success shadow-lg{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title">
+                                            {% if task.submitted %}
+                                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            {% else %}
+                                                <i class="bi bi-question-circle-fill text-warning me-2"></i>
+                                            {% endif %}
+                                            {{ task.name }}
+                                        </h5>
+                                        <p class="text-muted">{{ task.description }}</p>
+                                        {% if task.endpoint %}
+                                            <a href="{{ task.endpoint }}" target="_blank" class="btn btn-sm btn-outline-info mt-2">
+                                                <i class="bi bi-box-arrow-up-right"></i> Access Challenge
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end ms-3">
+                                        <span class="badge bg-primary fs-6">{{ task.points }} pts</span>
+                                    </div>
+                                </div>
+
+                                {% if not task.submitted %}
+                                <div class="flag-submit-container mt-3" data-task-id="{{ task.id }}">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control flag-input" placeholder="Enter flag format: CTF{...}" autocomplete="off">
+                                        <button class="btn btn-success submit-flag-btn" type="button">
+                                            <i class="bi bi-send"></i> Submit Flag
+                                        </button>
+                                    </div>
+                                    <div class="response-message mt-2"></div>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-success mt-3">
+                                    <i class="bi bi-trophy-fill"></i> Challenge completed! <strong>+{{ task.points }} points</strong>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .task-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .task-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+    }
+    .task-card.border-success {
+        border: 2px solid #10b981;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    }
+    #timer {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 1.8rem;
+    }
+    @media (max-width: 768px) {
+        #timer { font-size: 1.2rem; }
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    let ctfActive = true;
+    let timeEnded = false;
+
+    function updateTimer() {
+        $.get('/get_ctf_status', function(data) {
+            if (data.active && data.time_left > 0) {
+                let hours = Math.floor(data.time_left / 3600);
+                let minutes = Math.floor((data.time_left % 3600) / 60);
+                let seconds = Math.floor(data.time_left % 60);
+                $('#timer').text(`${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
+                ctfActive = true;
+                timeEnded = false;
+                $('.submit-flag-btn').prop('disabled', false);
+                $('.flag-input').prop('disabled', false);
+            } else if (data.active) {
+                $('#timer').text('CTF Ended');
+                ctfActive = false;
+                timeEnded = true;
+                $('.submit-flag-btn').prop('disabled', true);
+                $('.flag-input').prop('disabled', true);
+            } else {
+                $('#timer').text('No Active CTF');
+                ctfActive = false;
+                $('.submit-flag-btn').prop('disabled', true);
+                $('.flag-input').prop('disabled', true);
+            }
+        });
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    window.submitFlag = function(button) {
+        const container = button.closest('.flag-submit-container');
+        const taskId = container.data('task-id');
+        const flagInput = container.find('.flag-input');
+        const flag = flagInput.val();
+        const responseDiv = container.find('.response-message');
+
+        responseDiv.html('');
+
+        if (!flag || flag.trim() === '') {
+            responseDiv.html('<div class="alert alert-warning">⚠️ Please enter a flag!</div>');
+            return;
+        }
+
+        if (!ctfActive || timeEnded) {
+            responseDiv.html('<div class="alert alert-danger">⏰ CTF has ended! No more submissions allowed.</div>');
+            return;
+        }
+
+        button.prop('disabled', true);
+        const originalText = button.html();
+        button.html('<span class="spinner-border spinner-border-sm"></span> Submitting...');
+
+        $.ajax({
+            url: '/submit_flag',
+            method: 'POST',
+            data: { task_id: taskId, flag: flag },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(response) {
+                if (response.success) {
+                    responseDiv.html(`<div class="alert alert-success">✅ ${response.message}</div>`);
+                    setTimeout(function() {
+                        container.html(`<div class="alert alert-success mt-3"><i class="bi bi-trophy-fill"></i> Challenge completed! +${response.points || ''} points</div>`);
+                        button.closest('.task-card').addClass('border-success');
+                    }, 1000);
+                } else {
+                    responseDiv.html(`<div class="alert alert-danger">❌ ${response.message}</div>`);
+                    button.prop('disabled', false);
+                    button.html(originalText);
+                    flagInput.val('');
+                    setTimeout(function() {
+                        responseDiv.fadeOut('slow', function() { $(this).html('').show(); });
+                    }, 3000);
+                }
+            },
+            error: function(xhr) {
+                responseDiv.html(`<div class="alert alert-danger">❌ Server error. Please try again.</div>`);
+                button.prop('disabled', false);
+                button.html(originalText);
+            }
+        });
+    };
+
+    $(document).on('click', '.submit-flag-btn', function() { window.submitFlag($(this)); });
+    $(document).on('keypress', '.flag-input', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            window.submitFlag($(this).closest('.flag-submit-container').find('.submit-flag-btn'));
+        }
+    });
+});
+</script>
+{% endblock %}

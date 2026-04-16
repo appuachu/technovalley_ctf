@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Individual Dashboard</h4>
+            </div>
+            <div class="card-body">
+                <h5>Welcome, {{ current_user.individual_name }}!</h5>
+                <p>You are competing as an individual participant.</p>
+
+                {% if active_event %}
+                    <div class="alert alert-info">
+                        <strong>Active CTF Event:</strong> {{ active_event.name }}
+                        <div id="timer" class="mt-2 h4 text-danger"></div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('challenges') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-flag"></i> View Challenges
+                        </a>
+                        <a href="{{ url_for('scoreboard') }}" class="btn btn-info btn-lg">
+                            <i class="bi bi-trophy"></i> View Scoreboard
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> No active CTF event at the moment. Please wait for the admin to start an event.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Your Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h3>{{ current_user.submitted_flags|selectattr('is_correct', 'equalto', true)|list|length }}</h3>
+                        <p>Challenges Solved</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3>{{ current_user.submitted_flags|selectattr('is_correct', 'equalto', true)|sum(attribute='task.points') }}</h3>
+                        <p>Total Points</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3>{{ current_user.submitted_flags|length }}</h3>
+                        <p>Total Submissions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateTimer() {
+    $.get('/get_ctf_status', function(data) {
+        if (data.active && data.time_left > 0) {
+            let hours = Math.floor(data.time_left / 3600);
+            let minutes = Math.floor((data.time_left % 3600) / 60);
+            let seconds = Math.floor(data.time_left % 60);
+            $('#timer').text(`${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
+        } else if (data.active) {
+            $('#timer').text('CTF Ended - Submissions Disabled');
+        } else {
+            $('#timer').text('No Active CTF');
+        }
+    });
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+</script>
+{% endblock %}

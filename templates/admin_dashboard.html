@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon bg-primary bg-opacity-10">
+                            <i class="bi bi-calendar-event text-primary"></i>
+                        </div>
+                        <h2 class="mt-2 mb-0">{{ events|length }}</h2>
+                        <p class="text-muted mb-0">CTF Events</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon bg-success bg-opacity-10">
+                            <i class="bi bi-people text-success"></i>
+                        </div>
+                        <h2 class="mt-2 mb-0">{{ users|length }}</h2>
+                        <p class="text-muted mb-0">Registered Users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon bg-info bg-opacity-10">
+                            <i class="bi bi-people-fill text-info"></i>
+                        </div>
+                        <h2 class="mt-2 mb-0">{{ teams|length }}</h2>
+                        <p class="text-muted mb-0">Teams Created</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon bg-warning bg-opacity-10">
+                            <i class="bi bi-flag-fill text-warning"></i>
+                        </div>
+                        <h2 class="mt-2 mb-0">{{ tasks|length }}</h2>
+                        <p class="text-muted mb-0">Total Tasks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column -->
+    <div class="col-md-6">
+        <!-- CTF Event Management -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-gradient-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-plus me-2"></i>CTF Event Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('create_ctf') }}" method="POST" class="mb-4 p-3 bg-light rounded-3">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-plus-circle me-1"></i>Create New CTF Event
+                    </h6>
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Event Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <select name="duration" class="form-select" required>
+                            <option value="">Select Duration</option>
+                            <option value="30sec">⏱️ 30 Seconds (Test)</option>
+                            <option value="1min">⏱️ 1 Minute (Test)</option>
+                            <option value="1hour">🕐 1 Hour</option>
+                            <option value="24hours">📅 24 Hours</option>
+                            <option value="48hours">📅 48 Hours</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-lg"></i> Create Event
+                    </button>
+                </form>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="bi bi-list-check me-1"></i>All Events
+                </h6>
+                <div class="list-group">
+                    {% for event in events %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ event.name }}</strong>
+                                    {% if event.is_active %}
+                                        <span class="badge bg-success ms-2 pulse-badge">
+                                            <i class="bi bi-play-fill"></i> LIVE
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary ms-2">
+                                            <i class="bi bi-pause-fill"></i> INACTIVE
+                                        </span>
+                                    {% endif %}
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-hourglass-split"></i>
+                                        Duration: {{ event.duration_seconds // 3600 }} hours
+                                    </small>
+                                </div>
+                                <div class="btn-group">
+                                    {% if not event.is_active %}
+                                        <a href="{{ url_for('start_ctf', event_id=event.id) }}"
+                                           class="btn btn-success btn-sm"
+                                           onclick="return confirm('Start this CTF event?')">
+                                            <i class="bi bi-play-fill"></i> Start
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ url_for('stop_ctf', event_id=event.id) }}"
+                                           class="btn btn-warning btn-sm"
+                                           onclick="return confirm('Stop this CTF event?')">
+                                            <i class="bi bi-stop-fill"></i> Stop
+                                        </a>
+                                    {% endif %}
+
+                                    <!-- Delete Event Button -->
+                                    <a href="{{ url_for('delete_event', event_id=event.id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirmDeleteEvent('{{ event.name }}')">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No events created yet</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Management -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-gradient-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-folder-plus me-2"></i>Category Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('create_category') }}" method="POST" class="p-3 bg-light rounded-3">
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control"
+                               placeholder="Category Name (e.g., OSINT, Web, Crypto, Pwn)" required>
+                    </div>
+                    <div class="mb-3">
+                        <select name="event_id" class="form-select" required>
+                            <option value="">Select CTF Event</option>
+                            {% for event in events %}
+                                <option value="{{ event.id }}">{{ event.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-folder-plus"></i> Create Category
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-6">
+        <!-- Task Management -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-gradient-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle me-2"></i>Task Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('create_task') }}" method="POST">
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Task Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea name="description" class="form-control" placeholder="Task Description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" name="endpoint" class="form-control" placeholder="Endpoint (URL or file path)">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <input type="text" name="flag" class="form-control font-monospace" placeholder="Flag (e.g., CTF{...})" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="number" name="points" class="form-control" placeholder="Points" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <select name="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            {% for event in events %}
+                                <optgroup label="{{ event.name }}">
+                                    {% for category in event.categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% else %}
+                                        <option disabled>No categories in this event</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">
+                        <i class="bi bi-plus-lg"></i> Create Task
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Existing Tasks Table -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-table me-2"></i>Existing Tasks
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>CTF Event</th>
+                                <th class="text-center">Points</th>
+                                <th>Flag</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td class="fw-bold">#{{ task.id }}</td>
+                                <td>
+                                    <strong>{{ task.name }}</strong>
+                                    {% if task.endpoint %}
+                                        <a href="{{ task.endpoint }}" target="_blank" class="text-info ms-1">
+                                            <i class="bi bi-box-arrow-up-right small"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ task.category.name if task.category else 'N/A' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ task.category.ctf_event.name if task.category and task.category.ctf_event else 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark fs-6">{{ task.points }}</span>
+                                </td>
+                                <td>
+                                    <code class="small">{{ task.flag[:30] }}{% if task.flag|length > 30 %}...{% endif %}</code>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-warning" onclick="editTask({{ task.id }})" title="Edit Task">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a href="{{ url_for('delete_task', task_id=task.id) }}"
+                                           class="btn btn-outline-danger"
+                                           onclick="return confirm('⚠️ Permanently delete this task? This cannot be undone!')"
+                                           title="Delete Task">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-2">No tasks created yet</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-warning">
+                <h5 class="modal-title text-dark">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Task
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editTaskForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="task_id" id="edit_task_id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Task Name</label>
+                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Endpoint (URL)</label>
+                        <input type="text" name="endpoint" id="edit_endpoint" class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Flag</label>
+                            <input type="text" name="flag" id="edit_flag" class="form-control font-monospace" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Points</label>
+                            <input type="number" name="points" id="edit_points" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <select name="category_id" id="edit_category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            {% for event in events %}
+                                <optgroup label="{{ event.name }}">
+                                    {% for category in event.categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+.stats-card {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15) !important;
+}
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stats-icon i {
+    font-size: 28px;
+}
+.pulse-badge {
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+.btn-group {
+    gap: 5px;
+}
+</style>
+
+<script>
+function confirmDeleteEvent(eventName) {
+    return confirm(`⚠️ WARNING: You are about to delete "${eventName}"\n\nThis will also delete:\n- All categories in this event\n- All tasks in those categories\n- All flag submissions for those tasks\n\nThis action CANNOT be undone!\n\nClick OK to confirm deletion.`);
+}
+
+function editTask(taskId) {
+    $.get(`/admin/task/data/${taskId}`, function(task) {
+        $('#edit_task_id').val(task.id);
+        $('#edit_name').val(task.name);
+        $('#edit_description').val(task.description);
+        $('#edit_endpoint').val(task.endpoint || '');
+        $('#edit_flag').val(task.flag);
+        $('#edit_points').val(task.points);
+        $('#edit_category_id').val(task.category_id);
+        $('#editTaskForm').attr('action', `/admin/task/edit/${taskId}`);
+        $('#editTaskModal').modal('show');
+    }).fail(function() {
+        alert('Failed to load task data');
+    });
+}
+
+$(document).ready(function() {
+    $('#editTaskForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const url = form.attr('action');
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: form.serialize(),
+            success: function() {
+                $('#editTaskModal').modal('hide');
+                location.reload();
+            },
+            error: function() {
+                alert('Error updating task');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

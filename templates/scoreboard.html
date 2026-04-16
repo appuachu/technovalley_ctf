@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4"><i class="bi bi-trophy-fill text-warning me-2"></i>Scoreboard</h2>
+
+        <!-- Combined Leaderboard - Top Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-trophy-fill me-2"></i> Combined Leaderboard (Teams & Individuals)
+                        </h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Score</th>
+                                        <th>Achievement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set combined_list = [] %}
+
+                                    {% for team in teams %}
+                                        {% set _ = combined_list.append({'name': team.team_name, 'score': team.total_score, 'type': 'Team', 'icon': '🏆', 'members': team.members|length}) %}
+                                    {% endfor %}
+
+                                    {% for user, score in individuals %}
+                                        {% set _ = combined_list.append({'name': user.individual_name or user.username, 'score': score, 'type': 'Individual', 'icon': '👤', 'username': user.username}) %}
+                                    {% endfor %}
+
+                                    {% set combined_sorted = combined_list|sort(attribute='score', reverse=True) %}
+
+                                    {% if combined_sorted %}
+                                        {% for participant in combined_sorted %}
+                                            <tr class="align-middle">
+                                                <td class="fw-bold">
+                                                    {% if loop.index == 1 %}
+                                                        <span class="badge bg-warning text-dark fs-6 py-2 px-3">🥇 #1</span>
+                                                    {% elif loop.index == 2 %}
+                                                        <span class="badge bg-secondary fs-6 py-2 px-3">🥈 #2</span>
+                                                    {% elif loop.index == 3 %}
+                                                        <span class="badge bg-danger fs-6 py-2 px-3">🥉 #3</span>
+                                                    {% else %}
+                                                        <span class="text-muted">#{{ loop.index }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <strong>{{ participant.name }}</strong>
+                                                    {% if loop.index == 1 %}
+                                                        <span class="badge bg-warning text-dark ms-2">LEADER</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if participant.type == 'Team' %}
+                                                        <span class="badge bg-primary"><i class="bi bi-people-fill me-1"></i> Team</span>
+                                                        <small class="text-muted ms-1">({{ participant.members }} members)</small>
+                                                    {% else %}
+                                                        <span class="badge bg-success"><i class="bi bi-person-fill me-1"></i> Individual</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-dark fs-6 py-2 px-3">{{ participant.score }} pts</span>
+                                                </td>
+                                                <td>
+                                                    {% if participant.score >= 500 %}
+                                                        <i class="bi bi-star-fill text-warning me-1"></i> <span class="fw-bold text-warning">Elite Hacker</span>
+                                                    {% elif participant.score >= 200 %}
+                                                        <i class="bi bi-star-half text-info me-1"></i> <span class="fw-bold text-info">Advanced</span>
+                                                    {% elif participant.score >= 50 %}
+                                                        <i class="bi bi-star text-success me-1"></i> <span class="fw-bold text-success">Beginner</span>
+                                                    {% else %}
+                                                        <i class="bi bi-flag me-1"></i> <span class="text-muted">Starter</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">No participants yet</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="bi bi-bar-chart-fill me-2"></i> Team Rankings Chart</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="scoreChart" style="max-height: 400px;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i> Team Standings</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Team Name</th>
+                                        <th class="text-end">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if teams %}
+                                        {% for team in teams %}
+                                        <tr>
+                                            <td class="fw-bold">
+                                                {% if loop.index == 1 %}🥇
+                                                {% elif loop.index == 2 %}🥈
+                                                {% elif loop.index == 3 %}🥉
+                                                {% else %}{{ loop.index }}{% endif %}
+                                            </td>
+                                            <td><strong>{{ team.team_name }}</strong></td>
+                                            <td class="text-end"><span class="badge bg-primary">{{ team.total_score }}</span></td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4 text-muted">No teams created yet</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Participants Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-person-fill me-2"></i> Individual Participants
+                        </h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Participant Name</th>
+                                        <th>Username</th>
+                                        <th class="text-end">Score</th>
+                                        <th class="text-center">Challenges</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if individuals %}
+                                        {% for user, score in individuals %}
+                                        <tr>
+                                            <td class="fw-bold">
+                                                {% if loop.index == 1 %}🥇
+                                                {% elif loop.index == 2 %}🥈
+                                                {% elif loop.index == 3 %}🥉
+                                                {% else %}{{ loop.index }}{% endif %}
+                                            </td>
+                                            <td><strong>{{ user.individual_name or user.username }}</strong></td>
+                                            <td class="text-muted">{{ user.username }}</td>
+                                            <td class="text-end"><span class="badge bg-success">{{ score }}</span></td>
+                                            <td class="text-center">{{ user.submitted_flags|selectattr('is_correct', 'equalto', true)|list|length }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">No individual participants yet</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$.get('/scoreboard_data', function(data) {
+    if (data && data.length > 0) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(t => t.name.length > 15 ? t.name.substring(0, 12) + '...' : t.name),
+                datasets: [{
+                    label: 'Team Scores',
+                    data: data.map(t => t.score),
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.65
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { size: 12, weight: 'bold' } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Score: ${context.raw} points`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Points', font: { weight: 'bold' } },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Teams', font: { weight: 'bold' } },
+                        ticks: { font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    } else {
+        document.getElementById('scoreChart').parentElement.innerHTML = '<p class="text-center text-muted py-5"><i class="bi bi-inbox fs-1"></i><br>No team data available yet</p>';
+    }
+});
+</script>
+{% endblock %}
