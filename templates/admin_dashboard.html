@@ -329,13 +329,20 @@
                             <tr>
                                 <td class="fw-bold">#{{ task.id }}</td>
                                 <td>
-                                    <strong>{{ task.name }}</strong>
-                                    {% if task.endpoint %}
-                                        <a href="{{ task.endpoint }}" target="_blank" class="text-info ms-1">
-                                            <i class="bi bi-box-arrow-up-right small"></i>
-                                        </a>
-                                    {% endif %}
-                                </td>
+          <strong>{{ task.name }}</strong>
+          {% if task.endpoint %}
+              <button class="btn btn-sm btn-outline-info ms-1"
+                      onclick="copyToClipboard('{{ task.endpoint }}')"
+                      title="Copy endpoint URL">
+                  <i class="bi bi-copy"></i>
+              </button>
+              <a href="{{ task.endpoint }}" target="_blank"
+                 class="text-info ms-1"
+                 onclick="event.preventDefault(); copyToClipboard('{{ task.endpoint }}');">
+                  <i class="bi bi-box-arrow-up-right small"></i>
+              </a>
+          {% endif %}
+      </td>
                                 <td>
                                     <div style="white-space: pre-wrap; word-wrap: break-word; max-width: 250px; max-height: 80px; overflow-y: auto; font-size: 0.9rem; line-height: 1.5;">
                                         {{ task.description }}
