@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-calendar-edit me-2"></i>Edit CTF Event
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">Event Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ event.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duration" class="form-label fw-bold">Duration</label>
+                        <select class="form-select" id="duration" name="duration" required>
+                            <option value="30sec" {% if event.duration_seconds == 30 %}selected{% endif %}>⏱️ 30 Seconds (Test)</option>
+                            <option value="1min" {% if event.duration_seconds == 60 %}selected{% endif %}>⏱️ 1 Minute (Test)</option>
+                            <option value="1hour" {% if event.duration_seconds == 3600 %}selected{% endif %}>🕐 1 Hour</option>
+                            <option value="24hours" {% if event.duration_seconds == 86400 %}selected{% endif %}>📅 24 Hours</option>
+                            <option value="48hours" {% if event.duration_seconds == 172800 %}selected{% endif %}>📅 48 Hours</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Update Event
+                        </button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+</style>
+{% endblock %}

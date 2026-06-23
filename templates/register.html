@@ -1,44 +1,245 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Register for TechnovalleyCTF</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="username" class="form-label fw-bold">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" required placeholder="Choose a username">
+<div class="register-wrapper d-flex align-items-center justify-content-center min-vh-80">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <!-- Premium Register Card -->
+                <div class="card-register-premium p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="register-icon-wrapper mx-auto mb-3">
+                            <i class="bi bi-person-plus-fill"></i>
                         </div>
+                        <h3 class="fw-bold mb-1">Join the HackFest 6.0</h3>
+                        <p class="text-muted small">Create your account and start competing</p>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-bold">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" required placeholder="your@email.com">
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold small text-uppercase">Username</label>
+                            <div class="input-group input-group-premium">
+                                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-person text-muted"></i></span>
+                                <input type="text" class="form-control form-control-premium" id="username" name="username"
+                                       placeholder="Choose a username" required autofocus>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-bold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Create a password">
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold small text-uppercase">Email</label>
+                            <div class="input-group input-group-premium">
+                                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-envelope text-muted"></i></span>
+                                <input type="email" class="form-control form-control-premium" id="email" name="email"
+                                       placeholder="your@email.com" required>
+                            </div>
                         </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold small text-uppercase">Password</label>
+                            <div class="input-group input-group-premium">
+                                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control form-control-premium" id="password" name="password"
+                                       placeholder="Create a strong password" required>
+                            </div>
+                            <div class="form-text small text-muted mt-2">
+                                <i class="bi bi-info-circle me-1"></i> Minimum 8 characters
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-premium-register w-100 py-3 fw-bold">
+                            <i class="bi bi-check-circle me-2"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-muted small mb-0">
+                            Already have an account?
+                            <a href="{{ url_for('login') }}" class="fw-bold text-decoration-none text-primary">Sign In</a>
+                        </p>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">
-                        <i class="bi bi-check-circle"></i> Register
-                    </button>
-                </form>
-                <div class="mt-4 text-center">
-                    <p class="text-muted">Already have an account? <a href="{{ url_for('login') }}" class="text-primary fw-bold">Login here</a></p>
+
+                    <!-- decorative divider -->
+                    <div class="divider-premium my-4">
+                        <span class="px-3 text-muted small">join the community</span>
+                    </div>
+              
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* ----- PREMIUM REGISTER STYLES ----- */
+    .register-wrapper {
+        min-height: 80vh;
+        padding: 2rem 0;
+        position: relative;
+    }
+
+    /* animated background glow */
+    .register-wrapper::before {
+        content: '';
+        position: fixed;
+        top: -30%;
+        right: -20%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        animation: floatGlowReg 14s ease-in-out infinite alternate;
+    }
+    .register-wrapper::after {
+        content: '';
+        position: fixed;
+        bottom: -30%;
+        left: -20%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        animation: floatGlowReg 16s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatGlowReg {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(-30px, 40px) scale(1.1); }
+    }
+
+    .card-register-premium {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-radius: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 40px 80px -20px rgba(0, 20, 50, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transition: all 0.3s ease;
+    }
+
+    .card-register-premium:hover {
+        box-shadow: 0 50px 100px -20px rgba(0, 20, 50, 0.20);
+    }
+
+    .register-icon-wrapper {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        color: #fff;
+        box-shadow: 0 12px 32px rgba(16, 185, 129, 0.25);
+        transition: 0.3s;
+    }
+
+    .register-icon-wrapper:hover {
+        transform: scale(1.04) rotate(2deg);
+    }
+
+    .input-group-premium {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        border: 1.5px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.25s ease;
+        overflow: hidden;
+    }
+
+    .input-group-premium:focus-within {
+        border-color: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08);
+        background: #fff;
+    }
+
+    .input-group-premium .input-group-text {
+        padding-left: 1rem;
+        padding-right: 0.25rem;
+        font-size: 1.1rem;
+        color: #94a3b8;
+    }
+
+    .form-control-premium {
+        border: none;
+        background: transparent;
+        padding: 0.7rem 1rem 0.7rem 0.5rem;
+        font-size: 0.95rem;
+        color: #0a0e27;
+    }
+
+    .form-control-premium:focus {
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .form-control-premium::placeholder {
+        color: #aab4c6;
+        font-weight: 400;
+    }
+
+    .btn-premium-register {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        border-radius: 60px;
+        color: #fff;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-premium-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(16, 185, 129, 0.35);
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+    }
+
+    .btn-premium-register:active {
+        transform: scale(0.98);
+    }
+
+    .divider-premium {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .divider-premium::before,
+    .divider-premium::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1.5px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .divider-premium span {
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #94a3b8;
+    }
+
+    /* responsive */
+    @media (max-width: 576px) {
+        .card-register-premium {
+            padding: 1.5rem !important;
+            border-radius: 28px;
+        }
+        .register-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+        .btn-premium-register {
+            padding: 0.7rem;
+            font-size: 0.95rem;
+        }
+    }
+</style>
 {% endblock %}

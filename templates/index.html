@@ -1,109 +1,236 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="hero-section text-center py-5">
-    <div class="container">
-        <h1 class="display-4 fw-bold">TechnovalleyCTF</h1>
-        <p class="lead">Test your cybersecurity skills in our competitive Capture The Flag platform</p>
-        {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg mx-2">
-                <i class="bi bi-person-plus"></i> Get Started
-            </a>
-            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg mx-2">
-                <i class="bi bi-key"></i> Login
-            </a>
-        {% else %}
-            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
-                <i class="bi bi-speedometer2"></i> Go to Dashboard
-            </a>
-        {% endif %}
+<!-- PREMIUM HERO -->
+<section class="hero-premium text-center d-flex align-items-center">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="hero-badge mb-4 d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill">
+                    <i class="bi bi-shield-check fs-5"></i>
+                    <span class="fw-semibold">CTF Season 2026</span>
+                </div>
+                <h1 class="display-2 fw-bold hero-title">
+                    Technovalley<span class="text-gradient">CTF</span>
+                </h1>
+                <p class="hero-subtitle lead mx-auto mt-4">
+                    Test your cybersecurity skills in our competitive Capture The Flag platform.
+                    <br class="d-none d-md-block">
+                    <span class="fw-light">Compete. Conquer. Learn.</span>
+                </p>
+                <div class="hero-actions mt-5 d-flex flex-wrap justify-content-center gap-3">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-hero btn-lg px-5">
+                            <i class="bi bi-person-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-hero btn-lg px-5">
+                            <i class="bi bi-key me-2"></i>Login
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-hero btn-lg px-5">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="hero-stats mt-5 pt-3 d-flex justify-content-center gap-5">
+                    <div><span class="stat-number">50+</span><span class="stat-label">Challenges</span></div>
+                    <div><span class="stat-number">∞</span><span class="stat-label">Learning</span></div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+    <!-- decorative blobs -->
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-blob hero-blob-3"></div>
+</section>
 
-<div class="container mt-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card text-center h-100 border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <div class="mb-3">
-                        <i class="bi bi-trophy-fill display-1 text-warning"></i>
-                    </div>
-                    <h5 class="card-title fw-bold">Compete</h5>
-                    <p class="card-text text-muted">Solve challenges and climb the leaderboard</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center h-100 border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <div class="mb-3">
-                        <i class="bi bi-people-fill display-1 text-primary"></i>
-                    </div>
-                    <h5 class="card-title fw-bold">Team Up</h5>
-                    <p class="card-text text-muted">Create or join teams of up to 3 members</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center h-100 border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <div class="mb-3">
-                        <i class="bi bi-graph-up display-1 text-success"></i>
-                    </div>
-                    <h5 class="card-title fw-bold">Learn</h5>
-                    <p class="card-text text-muted">Improve your cybersecurity skills</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <style>
-.hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 0 0 40px 40px;
-    margin-top: -1rem;
-    padding: 4rem 0;
-    position: relative;
-    overflow: hidden;
-}
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.05)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
-    background-size: cover;
-    opacity: 0.3;
-    pointer-events: none;
-}
-.hero-section .container {
-    position: relative;
-    z-index: 1;
-}
-.btn-outline-primary {
-    border: 2px solid white;
-    color: white;
-    background: transparent;
-}
-.btn-outline-primary:hover {
-    background: white;
-    color: #764ba2;
-    border-color: white;
-}
-.btn-primary {
-    background: white;
-    border: none;
-    color: #764ba2;
-}
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    background: white;
-    color: #667eea;
-}
+    /* ----- PREMIUM INDEX STYLES ----- */
+    .hero-premium {
+        position: relative;
+        min-height: 82vh;
+        background: radial-gradient(ellipse at 20% 20%, #0f1a2e 0%, #0b1120 70%);
+        color: #fff;
+        overflow: hidden;
+        padding: 3rem 0;
+        border-radius: 0 0 50px 50px;
+        margin-top: -0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    /* floating blobs */
+    .hero-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .hero-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: #3b82f6;
+        top: -200px;
+        right: -150px;
+        opacity: 0.15;
+    }
+    .hero-blob-2 {
+        width: 500px;
+        height: 500px;
+        background: #8b5cf6;
+        bottom: -150px;
+        left: -100px;
+        opacity: 0.12;
+    }
+    .hero-blob-3 {
+        width: 300px;
+        height: 300px;
+        background: #10b981;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.06;
+    }
+
+    .hero-badge {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #cbd5e1;
+        font-size: 0.9rem;
+        letter-spacing: 0.4px;
+    }
+
+    .hero-title {
+        font-weight: 700;
+        letter-spacing: -1.5px;
+        line-height: 1.1;
+    }
+    .text-gradient {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        max-width: 600px;
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    /* buttons */
+    .btn-hero {
+        border-radius: 60px;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        transition: all 0.3s ease;
+        letter-spacing: 0.2px;
+        box-shadow: 0 8px 24px rgba(59,130,246,0.25);
+    }
+    .btn-primary.btn-hero {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        color: #fff;
+    }
+    .btn-primary.btn-hero:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(59,130,246,0.35);
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+    .btn-outline-hero {
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.2);
+        color: #e2e8f0;
+        border-radius: 60px;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        transition: all 0.3s;
+    }
+    .btn-outline-hero:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.4);
+        color: #fff;
+        transform: translateY(-3px);
+    }
+
+    /* stats */
+    .hero-stats {
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 1.5rem;
+    }
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: block;
+        color: #fff;
+        letter-spacing: -0.5px;
+    }
+    .stat-label {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-weight: 400;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+    }
+
+    /* ----- FEATURE CARDS (glass) ----- */
+    .card-feature {
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 32px;
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.04);
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-feature:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 30px 60px -16px rgba(0, 20, 40, 0.12);
+        background: rgba(255,255,255,0.92);
+        border-color: rgba(59,130,246,0.15);
+    }
+    .feature-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto;
+        background: rgba(245,158,11,0.10);
+        color: #f59e0b;
+        transition: 0.3s;
+    }
+    .card-feature:hover .feature-icon {
+        transform: scale(1.04);
+    }
+
+    .card-feature h5 {
+        font-size: 1.15rem;
+        letter-spacing: -0.2px;
+        color: #0a0e27;
+    }
+    .card-feature p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* responsive */
+    @media (max-width: 768px) {
+        .hero-premium { min-height: 70vh; padding: 2rem 0; }
+        .hero-title { font-size: 2.6rem; }
+        .hero-subtitle { font-size: 1rem; }
+        .hero-stats { gap: 2rem; }
+        .stat-number { font-size: 1.4rem; }
+        .btn-hero { padding: 0.6rem 1.5rem; font-size: 0.95rem; }
+    }
 </style>
 {% endblock %}

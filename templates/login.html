@@ -1,37 +1,241 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0"><i class="bi bi-key-fill me-2"></i>Login to TechnovalleyCTF</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="username" class="form-label fw-bold">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" required placeholder="Enter your username">
+<div class="login-wrapper d-flex align-items-center justify-content-center min-vh-80">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <!-- Premium Login Card -->
+                <div class="card-login-premium p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="login-icon-wrapper mx-auto mb-3">
+                            <i class="bi bi-shield-lock-fill"></i>
                         </div>
+                        <h3 class="fw-bold mb-1">Welcome Back</h3>
+                        <p class="text-muted small">Sign in to continue your CTF journey</p>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-bold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold small text-uppercase">Username</label>
+                            <div class="input-group input-group-premium">
+                                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-person text-muted"></i></span>
+                                <input type="text" class="form-control form-control-premium" id="username" name="username"
+                                       placeholder="Enter your username" required autofocus>
+                            </div>
                         </div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="password" class="form-label fw-semibold small text-uppercase">Password</label>
+                                <a href="#" class="text-decoration-none small text-primary">Forgot?</a>
+                            </div>
+                            <div class="input-group input-group-premium">
+                                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control form-control-premium" id="password" name="password"
+                                       placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-premium-login w-100 py-3 fw-bold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                        </button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-muted small mb-0">
+                            New to the arena?
+                            <a href="{{ url_for('register') }}" class="fw-bold text-decoration-none text-primary">Create Account</a>
+                        </p>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">
-                        <i class="bi bi-box-arrow-in-right"></i> Login
-                    </button>
-                </form>
-                <div class="mt-4 text-center">
-                    <p class="text-muted">Don't have an account? <a href="{{ url_for('register') }}" class="text-primary fw-bold">Register here</a></p>
+
+                    <!-- decorative divider -->
+                    <div class="divider-premium my-4">
+                        <span class="px-3 text-muted small">secure access</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                            <i class="bi bi-shield-check text-success me-1"></i> 256-bit encrypted
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* ----- PREMIUM LOGIN STYLES ----- */
+    .login-wrapper {
+        min-height: 80vh;
+        padding: 2rem 0;
+        position: relative;
+    }
+
+    /* animated background glow */
+    .login-wrapper::before {
+        content: '';
+        position: fixed;
+        top: -30%;
+        left: -20%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        animation: floatGlow 12s ease-in-out infinite alternate;
+    }
+    .login-wrapper::after {
+        content: '';
+        position: fixed;
+        bottom: -30%;
+        right: -20%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        animation: floatGlow 14s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatGlow {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    .card-login-premium {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-radius: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 40px 80px -20px rgba(0, 20, 50, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transition: all 0.3s ease;
+    }
+
+    .card-login-premium:hover {
+        box-shadow: 0 50px 100px -20px rgba(0, 20, 50, 0.20);
+    }
+
+    .login-icon-wrapper {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        color: #fff;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25);
+        transition: 0.3s;
+    }
+
+    .login-icon-wrapper:hover {
+        transform: scale(1.04) rotate(-2deg);
+    }
+
+    .input-group-premium {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        border: 1.5px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.25s ease;
+        overflow: hidden;
+    }
+
+    .input-group-premium:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+        background: #fff;
+    }
+
+    .input-group-premium .input-group-text {
+        padding-left: 1rem;
+        padding-right: 0.25rem;
+        font-size: 1.1rem;
+        color: #94a3b8;
+    }
+
+    .form-control-premium {
+        border: none;
+        background: transparent;
+        padding: 0.7rem 1rem 0.7rem 0.5rem;
+        font-size: 0.95rem;
+        color: #0a0e27;
+    }
+
+    .form-control-premium:focus {
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .form-control-premium::placeholder {
+        color: #aab4c6;
+        font-weight: 400;
+    }
+
+    .btn-premium-login {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        border-radius: 60px;
+        color: #fff;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-premium-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(59, 130, 246, 0.35);
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+    }
+
+    .btn-premium-login:active {
+        transform: scale(0.98);
+    }
+
+    .divider-premium {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .divider-premium::before,
+    .divider-premium::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1.5px solid rgba(226, 232, 240, 0.6);
+    }
+
+    .divider-premium span {
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #94a3b8;
+    }
+
+    /* responsive */
+    @media (max-width: 576px) {
+        .card-login-premium {
+            padding: 1.5rem !important;
+            border-radius: 28px;
+        }
+        .login-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+        .btn-premium-login {
+            padding: 0.7rem;
+            font-size: 0.95rem;
+        }
+    }
+</style>
 {% endblock %}

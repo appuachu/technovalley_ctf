@@ -3,274 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechnovalleyCTF - Cybersecurity Competition Platform</title>
+    <title>TechnovalleyCTF · Premium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts for professional typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        /* Enhanced Professional Styling - Overrides and improvements */
+        /* ----- PREMIUM DESIGN SYSTEM ----- */
         :root {
-            --primary-dark: #0a0e27;
+            --primary-dark: #0b1120;
             --primary-accent: #3b82f6;
             --secondary-accent: #8b5cf6;
             --success-accent: #10b981;
             --warning-accent: #f59e0b;
             --danger-accent: #ef4444;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
-            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --glass-bg: rgba(255, 255, 255, 0.92);
+            --card-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.18);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fc 0%, #eef2f8 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 10% 20%, #f0f4ff 0%, #e6edf7 100%);
             min-height: 100vh;
-            padding-bottom: 70px;
+            padding-bottom: 80px;
+            color: #0a0e27;
         }
 
-        /* Enhanced Navbar */
-        .navbar {
-            background: linear-gradient(135deg, #0a0e27 0%, #12172f 100%) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 0.8rem 0;
+        /* ----- NAVBAR (premium glass) ----- */
+        .navbar-premium {
+            background: rgba(11, 17, 32, 0.88) !important;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            padding: 0.7rem 0;
         }
 
-        .navbar-brand {
+        .navbar-premium .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #fff, #3b82f6);
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #94b9ff 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent !important;
-            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .navbar-brand i {
-            background: none;
+        .navbar-premium .navbar-brand i {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             -webkit-background-clip: unset;
             background-clip: unset;
-            color: #3b82f6;
-            margin-right: 8px;
+            color: #fff;
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 8px rgba(59,130,246,0.4));
         }
 
-        .nav-link {
+        .navbar-premium .nav-link {
             font-weight: 500;
-            margin: 0 0.25rem;
-            padding: 0.5rem 1rem !important;
-            border-radius: 12px;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 40px;
+            color: rgba(255,255,255,0.8) !important;
             transition: var(--transition-smooth);
+            font-size: 0.95rem;
+            letter-spacing: 0.2px;
+            margin: 0 2px;
+            position: relative;
         }
 
-        .nav-link:hover {
-            background: rgba(59, 130, 246, 0.15);
+        .navbar-premium .nav-link i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .navbar-premium .nav-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #fff !important;
             transform: translateY(-1px);
         }
 
-        .nav-link i {
-            margin-right: 6px;
+        .navbar-premium .nav-link.active {
+            background: rgba(59, 130, 246, 0.25);
+            color: #fff !important;
         }
 
-        /* Card enhancements */
-        .card {
-            border: none;
-            border-radius: 24px;
+        /* Notification Bell Styles */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-bell .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            border: 2px solid rgba(11, 17, 32, 0.88);
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        .notification-dropdown {
+            min-width: 380px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding: 0;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .notification-dropdown .dropdown-header {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #0f1a2e, #19233e);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .notification-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        .notification-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid #3b82f6;
+        }
+        .notification-item .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .notification-item .message {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .notification-item .time {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .notification-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .notification-empty i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        /* ----- CARDS (glassmorphism + premium) ----- */
+        .card-premium {
+            background: var(--glass-bg);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-xl);
             box-shadow: var(--card-shadow);
             transition: var(--transition-smooth);
             overflow: hidden;
-            background: var(--glass-bg);
-            backdrop-filter: blur(2px);
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.2);
+        .card-premium:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 30px 55px -12px rgba(0, 20, 60, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
-        .card-header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        .card-premium .card-header {
+            background: linear-gradient(135deg, #0f1a2e 0%, #19233e 100%);
+            padding: 1.3rem 1.8rem;
             border-bottom: 2px solid rgba(59, 130, 246, 0.3);
-            padding: 1.25rem 1.5rem;
             font-weight: 600;
             letter-spacing: -0.2px;
+            color: #fff;
         }
 
-        /* Alert styling */
-        .alert {
-            border-radius: 16px;
+        .card-premium .card-body {
+            padding: 1.8rem;
+        }
+
+        /* ----- BUTTONS (premium gradients) ----- */
+        .btn-premium-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(8px);
-            font-weight: 500;
-        }
-
-        /* Button enhancements */
-        .btn {
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
             border-radius: 40px;
-            padding: 0.6rem 1.5rem;
+            padding: 0.65rem 1.8rem;
             font-weight: 600;
             transition: var(--transition-smooth);
             letter-spacing: 0.3px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: none;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        .btn-premium-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.45);
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
         }
 
-        .btn-success {
+        .btn-premium-success {
             background: linear-gradient(135deg, #10b981, #059669);
             border: none;
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
         }
 
-        .btn-info {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        .btn-premium-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+            color: #fff;
+        }
+
+        .btn-premium-ghost {
+            background: transparent;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            color: #fff;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-premium-ghost:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* ----- ALERTS (premium) ----- */
+        .alert-premium {
+            border-radius: var(--radius-md);
             border: none;
-            color: white;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            padding: 1rem 1.6rem;
+            font-weight: 500;
+            border-left: 5px solid;
         }
 
-        /* CTF Status Bar */
-        #ctf-status-bar {
-            background: rgba(10, 14, 39, 0.95) !important;
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 0.75rem 0;
-            font-size: 0.9rem;
+        .alert-premium.alert-success {
+            background: rgba(16, 185, 129, 0.12);
+            border-left-color: #10b981;
+            color: #065f46;
         }
 
-        #ctf-status-text span {
-            font-weight: 600;
-            letter-spacing: 0.5px;
+        .alert-premium.alert-danger {
+            background: rgba(239, 68, 68, 0.10);
+            border-left-color: #ef4444;
+            color: #991b1b;
         }
 
-        #ctf-timer {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+        .alert-premium.alert-warning {
+            background: rgba(245, 158, 11, 0.10);
+            border-left-color: #f59e0b;
+            color: #92400e;
         }
 
-        /* Form inputs */
-        .form-control, .form-select {
-            border-radius: 14px;
+        /* ----- FORM (premium) ----- */
+        .form-premium {
+            border-radius: var(--radius-md);
             border: 1.5px solid #e2e8f0;
-            padding: 0.7rem 1rem;
+            padding: 0.75rem 1.2rem;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
             transition: var(--transition-smooth);
             font-size: 0.95rem;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-premium:focus {
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.15);
+            background: #fff;
+            outline: none;
         }
 
-        /* Modal enhancements */
-        .modal-content {
-            border-radius: 28px;
-            border: none;
+        /* ----- TABLE (premium) ----- */
+        .table-premium {
+            border-radius: var(--radius-lg);
             overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: white;
-            border: none;
-        }
-
-        /* Table styling */
-        .table {
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .table thead th {
-            background: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
+        .table-premium thead th {
+            background: #f1f5f9;
+            border-bottom: 2px solid #dbe0e8;
             font-weight: 600;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 1rem;
+            letter-spacing: 0.6px;
+            padding: 1rem 1.2rem;
+            color: #1e293b;
         }
 
-        .table tbody tr {
+        .table-premium tbody td {
+            padding: 1rem 1.2rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #ecf1f7;
+        }
+
+        .table-premium tbody tr {
             transition: var(--transition-smooth);
         }
 
-        .table tbody tr:hover {
-            background: rgba(59, 130, 246, 0.04);
-            transform: scale(1.01);
+        .table-premium tbody tr:hover {
+            background: rgba(59, 130, 246, 0.03);
+            transform: scale(1.005);
         }
 
-        /* Badge styling */
-        .badge {
-            padding: 0.4rem 0.8rem;
+        /* ----- BADGE (premium) ----- */
+        .badge-premium {
+            padding: 0.4rem 1rem;
             border-radius: 40px;
             font-weight: 500;
             letter-spacing: 0.2px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.2);
         }
 
-        /* Timer display */
-        #timer {
+        /* ----- CTF STATUS BAR (premium) ----- */
+        #ctf-status-bar {
+            background: rgba(11, 17, 32, 0.92) !important;
+            backdrop-filter: blur(16px) saturate(180%);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 0.8rem 0;
+            font-size: 0.95rem;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.08);
+        }
+
+        #ctf-status-text .badge {
+            font-size: 0.85rem;
+            padding: 0.3rem 0.9rem;
+        }
+
+        #ctf-timer {
             font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-size: 2rem;
+            font-size: 1.2rem;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .card-header h4, .card-header h5 {
-                font-size: 1.2rem;
-            }
-            #timer {
-                font-size: 1.3rem;
-            }
-            .btn {
-                padding: 0.5rem 1.2rem;
-                font-size: 0.9rem;
-            }
+        /* ----- MODAL (premium) ----- */
+        .modal-premium .modal-content {
+            border-radius: var(--radius-xl);
+            border: none;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.96);
         }
 
-        /* Custom scrollbar */
+        .modal-premium .modal-header {
+            background: linear-gradient(135deg, #0f1a2e, #19233e);
+            color: #fff;
+            border: none;
+            padding: 1.4rem 2rem;
+        }
+
+        /* ----- MISC ----- */
+        .text-gradient {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .shadow-premium {
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.12);
+        }
+
+        /* scroll */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+            background: #eef2f8;
+            border-radius: 12px;
         }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 10px;
+            border-radius: 12px;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .navbar-premium .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .card-premium .card-header {
+                padding: 1rem 1.2rem;
+            }
+            #ctf-timer {
+                font-size: 1rem;
+            }
+            .btn-premium-primary {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .notification-dropdown {
+                min-width: 300px;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+
+    <!-- PREMIUM NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-premium sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <i class="bi bi-shield-lock-fill"></i> TechnovalleyCTF
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    style="color: rgba(255,255,255,0.7);">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     {% if current_user.is_authenticated %}
                         {% if not current_user.is_admin %}
                             <li class="nav-item" id="challenges-nav-item">
@@ -281,6 +462,43 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('scoreboard') }}">
                                     <i class="bi bi-trophy"></i> Scoreboard
+                                </a>
+                            </li>
+                            <!-- Notification Bell -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link notification-bell" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-bell" style="font-size: 1.3rem;"></i>
+                                    <span id="notificationBadge" class="badge" style="display: none;">0</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+                                    <li>
+                                        <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                            <strong><i class="bi bi-bell-fill me-2"></i>Notifications</strong>
+                                            <button class="btn btn-sm btn-link text-white-50" onclick="markAllRead()" style="text-decoration: none;">
+                                                <i class="bi bi-check-all"></i> Read all
+                                            </button>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider" style="margin: 0;"></li>
+                                    <li id="notificationList">
+                                        <div class="notification-empty">
+                                            <i class="bi bi-inbox"></i>
+                                            <p class="mb-0">No notifications</p>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider" style="margin: 0;"></li>
+                                    <li>
+                                        <a href="{{ url_for('notifications') }}" class="dropdown-item text-center text-primary">
+                                            <i class="bi bi-arrow-right me-1"></i> View All Notifications
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if current_user.is_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Admin
                                 </a>
                             </li>
                         {% endif %}
@@ -306,11 +524,12 @@
         </div>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <div class="container mt-4 mb-5">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                    <div class="alert alert-premium alert-{{ category }} alert-dismissible fade show shadow-premium" role="alert">
                         <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-octagon{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
                         {{ message|safe }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -322,180 +541,317 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- CTF Status Bar (visible only when logged in and not admin) -->
+    <!-- CTF STATUS BAR (premium) -->
     {% if current_user.is_authenticated and not current_user.is_admin %}
-    <div id="ctf-status-bar" class="fixed-bottom text-white p-2 text-center" style="z-index: 1000;">
+    <div id="ctf-status-bar" class="fixed-bottom text-white text-center" style="z-index: 1050;">
         <div class="container">
-            <div class="row align-items-center">
+            <div class="row align-items-center gy-1">
                 <div class="col-md-6 text-start">
-                    <strong><i class="bi bi-info-circle-fill me-1"></i> CTF Status:</strong>
+                    <strong><i class="bi bi-info-circle-fill me-1" style="color: #3b82f6;"></i> CTF Status:</strong>
                     <span id="ctf-status-text" class="ms-1">Checking...</span>
                 </div>
-                <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
-                    <strong><i class="bi bi-hourglass-split me-1"></i> Time Remaining:</strong>
-                    <span id="ctf-timer" class="fw-bold ms-1" style="color: #fbbf24;">--:--:--</span>
+                <div class="col-md-6 text-md-end text-start">
+                    <strong><i class="bi bi-hourglass-split me-1" style="color: #fbbf24;"></i> Time Remaining:</strong>
+                    <span id="ctf-timer" class="fw-bold ms-1">--:--:--</span>
                 </div>
             </div>
         </div>
     </div>
     {% endif %}
 
+    <!-- SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    {% if current_user.is_authenticated and not current_user.is_admin %}
     <script>
-  document.addEventListener("DOMContentLoaded", function () {
+    // Notification functions
+    let lastNotificationId = 0;
+    let notificationSoundEnabled = true;
 
-      let ctfActive = false;
-      let ctfEnded = false;
+    function fetchNotifications() {
+        fetch('/api/notifications')
+            .then(response => response.json())
+            .then(notifications => {
+                const unreadCount = notifications.filter(n => !n.is_read).length;
+                const badge = document.getElementById('notificationBadge');
+                const list = document.getElementById('notificationList');
 
-      function updateCTFStatus() {
+                // Check for new notifications
+                if (notifications.length > 0 && notifications[0].id > lastNotificationId) {
+                    const newOnes = notifications.filter(n => n.id > lastNotificationId);
+                    newOnes.forEach(n => {
+                        showNotificationToast(n);
+                        if (notificationSoundEnabled) {
+                            playNotificationSound();
+                        }
+                    });
+                    lastNotificationId = notifications[0].id;
+                }
 
-          if (typeof $ === "undefined") {
-              console.error("jQuery not loaded!");
-              return;
-          }
+                // Update badge
+                if (unreadCount > 0) {
+                    badge.style.display = 'flex';
+                    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                } else {
+                    badge.style.display = 'none';
+                }
 
-          $.get('/get_ctf_status', function(data) {
+                // Update dropdown list
+                const recent = notifications.slice(0, 5);
+                if (recent.length > 0) {
+                    let html = '';
+                    recent.forEach(n => {
+                        html += `
+                            <div class="notification-item ${n.is_read ? '' : 'unread'}" onclick="markRead(${n.id})">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1 me-2">
+                                        <div class="title">${n.title}</div>
+                                        <div class="message">${n.message}</div>
+                                        <div class="time mt-1">
+                                            <i class="bi bi-clock me-1"></i>${n.created_at}
+                                            ${n.task_name ? `<span class="badge bg-secondary ms-2">${n.task_name}</span>` : ''}
+                                        </div>
+                                    </div>
+                                    ${!n.is_read ? `<span class="badge bg-info">New</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    list.innerHTML = html;
+                } else {
+                    list.innerHTML = `
+                        <div class="notification-empty">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mb-0">No notifications</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => console.error('Error fetching notifications:', error));
+    }
 
-              if (data.active && data.time_left > 0) {
+    function showNotificationToast(notification) {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position: fixed; bottom: 80px; right: 20px; z-index: 9999; max-width: 400px;';
+            document.body.appendChild(container);
+        }
 
-                  ctfActive = true;
-                  ctfEnded = false;
+        const toast = document.createElement('div');
+        toast.className = 'toast show';
+        toast.style.cssText = 'background: rgba(11, 17, 32, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; color: white; min-width: 300px; margin-bottom: 10px; animation: slideInRight 0.5s ease;';
+        toast.innerHTML = `
+            <div class="toast-header" style="background: transparent; color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <i class="bi bi-bell-fill text-info me-2"></i>
+                <strong class="me-auto">${notification.title}</strong>
+                <small>${notification.created_at}</small>
+                <button type="button" class="btn-close btn-close-white" onclick="this.closest('.toast').remove();"></button>
+            </div>
+            <div class="toast-body">
+                ${notification.message}
+                ${notification.task_name ? `<br><small class="text-info"><i class="bi bi-flag me-1"></i>${notification.task_name}</small>` : ''}
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-primary" onclick="markReadAndRemove(${notification.id}, this.closest('.toast'))">
+                        <i class="bi bi-check me-1"></i> Mark as Read
+                    </button>
+                </div>
+            </div>
+        `;
 
-                  $('#ctf-status-text').html(
-                      '<span class="text-success fw-bold"><i class="bi bi-play-circle-fill"></i> ACTIVE</span>'
-                  );
+        container.appendChild(toast);
 
-                  $('#ctf-status-bar')
-                      .removeClass('bg-danger')
-                      .addClass('bg-dark');
+        // Auto remove after 10 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.animation = 'slideOutRight 0.5s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 500);
+            }
+        }, 10000);
+    }
 
-                  let hours = Math.floor(data.time_left / 3600);
-                  let minutes = Math.floor((data.time_left % 3600) / 60);
-                  let seconds = Math.floor(data.time_left % 60);
+    function markReadAndRemove(notificationId, toastElement) {
+        markRead(notificationId);
+        if (toastElement) {
+            toastElement.style.animation = 'slideOutRight 0.5s ease';
+            setTimeout(() => {
+                if (toastElement.parentNode) {
+                    toastElement.remove();
+                }
+            }, 500);
+        }
+    }
 
-                  let timeString = `${hours.toString().padStart(2,'0')}:` +
-                                   `${minutes.toString().padStart(2,'0')}:` +
-                                   `${seconds.toString().padStart(2,'0')}`;
+    function markRead(notificationId) {
+        fetch(`/notification/mark_read/${notificationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchNotifications();
+            }
+        })
+        .catch(error => console.error('Error marking notification as read:', error));
+    }
 
-                  $('#ctf-timer')
-                      .text(timeString)
-                      .removeClass('text-danger')
-                      .css('color', '#fbbf24');
+    function markAllRead() {
+        fetch('/notification/mark_all_read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchNotifications();
+                const dropdown = bootstrap.Dropdown.getInstance(document.getElementById('notificationDropdown'));
+                if (dropdown) dropdown.hide();
+            }
+        })
+        .catch(error => console.error('Error marking all notifications as read:', error));
+    }
 
-                  $('#challenges-link')
-                      .removeClass('disabled')
-                      .css('opacity', '1')
-                      .off('click')
-                      .on('click', function() {
-                          return true;
-                      });
+    function playNotificationSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
 
-              } else if (data.active) {
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
 
-                  ctfActive = false;
-                  ctfEnded = true;
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.1;
 
-                  $('#ctf-status-text').html(
-                      '<span class="text-danger fw-bold"><i class="bi bi-stop-circle-fill"></i> ENDED</span>'
-                  );
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+            }, 150);
+        } catch (e) {
+            console.log("Sound not supported");
+        }
+    }
 
-                  $('#ctf-timer')
-                      .text('00:00:00')
-                      .css('color', '#ef4444');
+    // Add animation styles
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(styleSheet);
 
-                  $('#ctf-status-bar')
-                      .removeClass('bg-dark')
-                      .addClass('bg-danger');
+    // CTF Status functions
+    {% if current_user.is_authenticated and not current_user.is_admin %}
+    function updateCTFStatus() {
+        if (typeof $ === "undefined") return;
 
-                  $('#challenges-link')
-                      .addClass('disabled')
-                      .css('opacity', '0.5')
-                      .off('click')
-                      .on('click', function(e) {
-                          e.preventDefault();
-                          showAlert(
-                              'danger',
-                              '<i class="bi bi-clock-history"></i> ⏰ The CTF competition has ended! You can no longer access challenges.',
-                              5000
-                          );
-                          return false;
-                      });
+        $.get('/get_ctf_status', function(data) {
+            if (data.active && data.time_left > 0) {
+                $('#ctf-status-text').html(
+                    '<span class="badge bg-success bg-opacity-25 text-success fw-bold px-3 py-2"><i class="bi bi-play-circle-fill me-1"></i> ACTIVE</span>'
+                );
+                $('#ctf-status-bar').removeClass('bg-danger').css('background', 'rgba(11, 17, 32, 0.92)');
 
-              } else {
+                let hours = Math.floor(data.time_left / 3600);
+                let minutes = Math.floor((data.time_left % 3600) / 60);
+                let seconds = Math.floor(data.time_left % 60);
+                let timeString = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+                $('#ctf-timer').text(timeString).css('color', '#fbbf24');
 
-                  ctfActive = false;
-                  ctfEnded = false;
+                $('#challenges-link').removeClass('disabled').css('opacity', '1').off('click').on('click', function() { return true; });
 
-                  $('#ctf-status-text').html(
-                      '<span class="text-secondary fw-bold"><i class="bi bi-pause-circle-fill"></i> INACTIVE</span>'
-                  );
+            } else if (data.active) {
+                $('#ctf-status-text').html(
+                    '<span class="badge bg-danger bg-opacity-25 text-danger fw-bold px-3 py-2"><i class="bi bi-stop-circle-fill me-1"></i> ENDED</span>'
+                );
+                $('#ctf-timer').text('00:00:00').css('color', '#ef4444');
+                $('#ctf-status-bar').css('background', 'rgba(180, 20, 20, 0.85)');
+                $('#challenges-link').addClass('disabled').css('opacity', '0.5').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    showAlert('danger', '⏰ The CTF competition has ended! You can no longer access challenges.', 5000);
+                    return false;
+                });
+            } else {
+                $('#ctf-status-text').html(
+                    '<span class="badge bg-secondary bg-opacity-25 text-secondary fw-bold px-3 py-2"><i class="bi bi-pause-circle-fill me-1"></i> INACTIVE</span>'
+                );
+                $('#ctf-timer').text('No Active Event').css('color', '#9ca3af');
+                $('#ctf-status-bar').css('background', 'rgba(11, 17, 32, 0.92)');
+                $('#challenges-link').addClass('disabled').css('opacity', '0.5').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    showAlert('warning', '⚠️ No active CTF event available. Please wait for the admin to start a competition.', 5000);
+                    return false;
+                });
+            }
+        }).fail(function() { console.error('CTF status fetch failed'); });
+    }
 
-                  $('#ctf-timer').text('No Active Event').css('color', '#9ca3af');
-
-                  $('#ctf-status-bar')
-                      .removeClass('bg-danger')
-                      .addClass('bg-dark');
-
-                  $('#challenges-link')
-                      .addClass('disabled')
-                      .css('opacity', '0.5')
-                      .off('click')
-                      .on('click', function(e) {
-                          e.preventDefault();
-                          showAlert(
-                              'warning',
-                              '<i class="bi bi-exclamation-triangle-fill"></i> ⚠️ No active CTF event available. Please wait for the admin to start a competition.',
-                              5000
-                          );
-                          return false;
-                      });
-              }
-
-          }).fail(function() {
-              console.error('Failed to fetch CTF status');
-          });
-      }
-
-      function showAlert(type, message, duration = 5000) {
-
-          const icon = type === 'success' ? 'check-circle-fill' :
-                      type === 'danger' ? 'exclamation-octagon-fill' :
-                      type === 'warning' ? 'exclamation-triangle-fill' : 'info-circle-fill';
-
-          const alertHtml = `
-              <div class="alert alert-${type} alert-dismissible fade show shadow-lg" role="alert" style="border-radius: 16px; border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'danger' ? '#ef4444' : '#f59e0b'};">
-                  <i class="bi bi-${icon} me-2"></i>
-                  ${message}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-              </div>
-          `;
-
-          $('.container.mt-4').prepend(alertHtml);
-
-          setTimeout(function() {
-              $('.alert').fadeOut('slow', function() {
-                  $(this).remove();
-              });
-          }, duration);
-      }
-
-      // Run every second
-      setInterval(updateCTFStatus, 1000);
-      updateCTFStatus();
-
-      // Recheck when tab becomes active
-      document.addEventListener('visibilitychange', function () {
-          if (!document.hidden) {
-              updateCTFStatus();
-          }
-      });
-
-  });
-  </script>
+    function showAlert(type, message, duration = 5000) {
+        const icon = type === 'success' ? 'check-circle-fill' :
+                    type === 'danger' ? 'exclamation-octagon-fill' :
+                    type === 'warning' ? 'exclamation-triangle-fill' : 'info-circle-fill';
+        const alertHtml = `
+            <div class="alert alert-premium alert-${type} alert-dismissible fade show shadow-premium" role="alert" style="border-left-color: ${type === 'success' ? '#10b981' : type === 'danger' ? '#ef4444' : '#f59e0b'};">
+                <i class="bi bi-${icon} me-2"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        $('.container.mt-4').prepend(alertHtml);
+        setTimeout(function() {
+            $('.alert').fadeOut('slow', function() { $(this).remove(); });
+        }, duration);
+    }
     {% endif %}
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        // Fetch notifications if user is logged in
+        {% if current_user.is_authenticated and not current_user.is_admin %}
+        // Initial fetch to set lastNotificationId
+        fetch('/api/notifications')
+            .then(response => response.json())
+            .then(notifications => {
+                if (notifications.length > 0) {
+                    lastNotificationId = notifications[0].id;
+                }
+                fetchNotifications();
+            });
+
+        // Poll every 3 seconds for new notifications
+        setInterval(fetchNotifications, 3000);
+        {% endif %}
+
+        // CTF Status
+        {% if current_user.is_authenticated and not current_user.is_admin %}
+        setInterval(updateCTFStatus, 1000);
+        updateCTFStatus();
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                updateCTFStatus();
+                fetchNotifications();
+            }
+        });
+        {% endif %}
+    });
+    </script>
 </body>
 </html>

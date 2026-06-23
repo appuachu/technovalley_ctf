@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-folder-edit me-2"></i>Edit Category
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">Category Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ category.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="event_id" class="form-label fw-bold">CTF Event</label>
+                        <select class="form-select" id="event_id" name="event_id" required>
+                            <option value="">Select Event</option>
+                            {% for event in events %}
+                            <option value="{{ event.id }}" {% if event.id == category.ctf_event_id %}selected{% endif %}>
+                                {{ event.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save me-1"></i> Update Category
+                        </button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+</style>
+{% endblock %}

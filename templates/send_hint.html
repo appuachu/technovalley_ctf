@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-info text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-megaphone me-2"></i>Send Hint / Notification
+                </h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('send_hint') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-bold">Notification Title</label>
+                        <input type="text" class="form-control" id="title" name="title"
+                               placeholder="e.g., Hint for Web Challenge" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="task_id" class="form-label fw-bold">Related Task (Optional)</label>
+                        <select class="form-select" id="task_id" name="task_id">
+                            <option value="">General Notification (No specific task)</option>
+                            {% for task in tasks %}
+                            <option value="{{ task.id }}">
+                                {{ task.name }} ({{ task.category.name if task.category else 'No Category' }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-bold">Message / Hint</label>
+                        <textarea class="form-control" id="message" name="message" rows="6"
+                                  placeholder="Enter the hint or notification message here..." required></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-info">
+                            <i class="bi bi-send me-1"></i> Send Notification
+                        </button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Hints -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Recent Hints Sent
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recentHints">
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <p>Select a task above to view hints</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+</style>
+
+<script>
+document.getElementById('task_id').addEventListener('change', function() {
+    const taskId = this.value;
+    const recentHintsDiv = document.getElementById('recentHints');
+
+    if (taskId) {
+        fetch(`/admin/get_hint_data/${taskId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.hints && data.hints.length > 0) {
+                    let html = `<h6 class="text-info mb-3">Hints for: ${data.task_name}</h6>`;
+                    data.hints.forEach(hint => {
+                        html += `
+                            <div class="card mb-2">
+                                <div class="card-body py-2">
+                                    <div class="d-flex justify-content-between">
+                                        <strong class="text-warning">${hint.title}</strong>
+                                        <small class="text-muted">${hint.created_at}</small>
+                                    </div>
+                                    <p class="mb-0 mt-1">${hint.message}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    recentHintsDiv.innerHTML = html;
+                } else {
+                    recentHintsDiv.innerHTML = `
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hints sent for this task yet</p>
+                        </div>
+                    `;
+                }
+            });
+    } else {
+        recentHintsDiv.innerHTML = `
+            <div class="text-center text-muted py-3">
+                <i class="bi bi-inbox fs-1"></i>
+                <p>Select a task to view hints</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

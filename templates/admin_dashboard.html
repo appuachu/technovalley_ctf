@@ -53,6 +53,28 @@
     </div>
 </div>
 
+<!-- Admin Actions Bar -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body d-flex flex-wrap gap-2 align-items-center">
+                <h6 class="mb-0 me-3 fw-bold">
+                    <i class="bi bi-tools me-1"></i>Admin Actions:
+                </h6>
+                <a href="{{ url_for('send_hint') }}" class="btn btn-info">
+                    <i class="bi bi-megaphone me-1"></i> Send Hint
+                </a>
+                <a href="{{ url_for('debug_flags') }}" class="btn btn-secondary" target="_blank">
+                    <i class="bi bi-bug me-1"></i> Debug Flags
+                </a>
+                <button class="btn btn-danger" onclick="confirmDeleteAll()">
+                    <i class="bi bi-trash3 me-1"></i> Delete All Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <!-- Left Column -->
     <div class="col-md-6">
@@ -125,11 +147,18 @@
                                         </a>
                                     {% endif %}
 
+                                    <!-- Edit Event Button -->
+                                    <a href="{{ url_for('edit_event', event_id=event.id) }}"
+                                       class="btn btn-primary btn-sm"
+                                       title="Edit Event">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
                                     <!-- Delete Event Button -->
                                     <a href="{{ url_for('delete_event', event_id=event.id) }}"
                                        class="btn btn-danger btn-sm"
                                        onclick="return confirmDeleteEvent('{{ event.name }}')">
-                                        <i class="bi bi-trash-fill"></i> Delete
+                                        <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>
                             </div>
@@ -169,6 +198,53 @@
                         <i class="bi bi-folder-plus"></i> Create Category
                     </button>
                 </form>
+
+                <!-- Display Categories with Edit/Delete -->
+                <div class="mt-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-folder me-1"></i>Existing Categories
+                    </h6>
+                    <div class="list-group">
+                        {% for event in events %}
+                            {% if event.categories %}
+                                <div class="list-group-item bg-light">
+                                    <strong class="text-primary">{{ event.name }}</strong>
+                                    <div class="mt-2">
+                                        {% for category in event.categories %}
+                                            <div class="d-flex justify-content-between align-items-center p-2 mb-1 bg-white rounded border">
+                                                <span>
+                                                    <i class="bi bi-folder text-warning"></i>
+                                                    {{ category.name }}
+                                                    <small class="text-muted ms-2">
+                                                        ({{ category.tasks|length }} tasks)
+                                                    </small>
+                                                </span>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('edit_category', category_id=category.id) }}"
+                                                       class="btn btn-primary"
+                                                       title="Edit Category">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{{ url_for('delete_category', category_id=category.id) }}"
+                                                       class="btn btn-danger"
+                                                       onclick="return confirm('Delete category "{{ category.name }}" and all its tasks?')"
+                                                       title="Delete Category">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p>No categories created yet</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -188,7 +264,7 @@
                         <input type="text" name="name" class="form-control" placeholder="Task Name" required>
                     </div>
                     <div class="mb-3">
-                        <textarea name="description" class="form-control" placeholder="Task Description" rows="3" required></textarea>
+                        <textarea name="description" class="form-control" placeholder="Task Description" rows="5" required></textarea>
                     </div>
                     <div class="mb-3">
                         <input type="text" name="endpoint" class="form-control" placeholder="Endpoint (URL or file path)">
@@ -238,13 +314,14 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-dark">
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>CTF Event</th>
-                                <th class="text-center">Points</th>
-                                <th>Flag</th>
-                                <th class="text-center">Actions</th>
+                                <th style="width: 5%;">ID</th>
+                                <th style="width: 15%;">Name</th>
+                                <th style="width: 25%;">Description</th>
+                                <th style="width: 12%;">Category</th>
+                                <th style="width: 12%;">CTF Event</th>
+                                <th style="width: 8%;" class="text-center">Points</th>
+                                <th style="width: 13%;">Flag</th>
+                                <th style="width: 10%;" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -258,6 +335,11 @@
                                             <i class="bi bi-box-arrow-up-right small"></i>
                                         </a>
                                     {% endif %}
+                                </td>
+                                <td>
+                                    <div style="white-space: pre-wrap; word-wrap: break-word; max-width: 250px; max-height: 80px; overflow-y: auto; font-size: 0.9rem; line-height: 1.5;">
+                                        {{ task.description }}
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="badge bg-info">{{ task.category.name if task.category else 'N/A' }}</span>
@@ -289,7 +371,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <i class="bi bi-inbox fs-1 text-muted"></i>
                                     <p class="text-muted mt-2">No tasks created yet</p>
                                 </td>
@@ -322,7 +404,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Description</label>
-                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                        <textarea name="description" id="edit_description" class="form-control" rows="6" required></textarea>
+                        <small class="text-muted">Line breaks will be preserved in the description.</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Endpoint (URL)</label>
@@ -360,6 +443,69 @@
         </div>
     </div>
 </div>
+
+<script>
+function confirmDeleteEvent(eventName) {
+    return confirm(`⚠️ WARNING: You are about to delete "${eventName}"\n\nThis will also delete:\n- All categories in this event\n- All tasks in those categories\n- All flag submissions for those tasks\n\nThis action CANNOT be undone!\n\nClick OK to confirm deletion.`);
+}
+
+function confirmDeleteAll() {
+    if (confirm('⚠️ WARNING: This will delete ALL events, categories, tasks, and submissions!\n\nType "DELETE_ALL" to confirm.')) {
+        const confirmText = prompt('Type "DELETE_ALL" to confirm deletion:');
+        if (confirmText === 'DELETE_ALL') {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ url_for('delete_all_events') }}";
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'confirm';
+            input.value = 'DELETE_ALL';
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            alert('Deletion cancelled. Please type "DELETE_ALL" to confirm.');
+        }
+    }
+}
+
+function editTask(taskId) {
+    $.get(`/admin/task/data/${taskId}`, function(task) {
+        $('#edit_task_id').val(task.id);
+        $('#edit_name').val(task.name);
+        $('#edit_description').val(task.description);
+        $('#edit_endpoint').val(task.endpoint || '');
+        $('#edit_flag').val(task.flag);
+        $('#edit_points').val(task.points);
+        $('#edit_category_id').val(task.category_id);
+        $('#editTaskForm').attr('action', `/admin/edit_task/${taskId}`);
+        $('#editTaskModal').modal('show');
+    }).fail(function() {
+        alert('Failed to load task data');
+    });
+}
+
+$(document).ready(function() {
+    $('#editTaskForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const url = form.attr('action');
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                $('#editTaskModal').modal('hide');
+                location.reload();
+            },
+            error: function() {
+                alert('Error updating task');
+            }
+        });
+    });
+});
+</script>
 
 <style>
 .bg-gradient-primary {
@@ -405,48 +551,21 @@
 .btn-group {
     gap: 5px;
 }
+
+/* Custom scrollbar for description */
+td div::-webkit-scrollbar {
+    width: 4px;
+}
+td div::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+td div::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+td div::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 </style>
-
-<script>
-function confirmDeleteEvent(eventName) {
-    return confirm(`⚠️ WARNING: You are about to delete "${eventName}"\n\nThis will also delete:\n- All categories in this event\n- All tasks in those categories\n- All flag submissions for those tasks\n\nThis action CANNOT be undone!\n\nClick OK to confirm deletion.`);
-}
-
-function editTask(taskId) {
-    $.get(`/admin/task/data/${taskId}`, function(task) {
-        $('#edit_task_id').val(task.id);
-        $('#edit_name').val(task.name);
-        $('#edit_description').val(task.description);
-        $('#edit_endpoint').val(task.endpoint || '');
-        $('#edit_flag').val(task.flag);
-        $('#edit_points').val(task.points);
-        $('#edit_category_id').val(task.category_id);
-        $('#editTaskForm').attr('action', `/admin/task/edit/${taskId}`);
-        $('#editTaskModal').modal('show');
-    }).fail(function() {
-        alert('Failed to load task data');
-    });
-}
-
-$(document).ready(function() {
-    $('#editTaskForm').on('submit', function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const url = form.attr('action');
-
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: form.serialize(),
-            success: function() {
-                $('#editTaskModal').modal('hide');
-                location.reload();
-            },
-            error: function() {
-                alert('Error updating task');
-            }
-        });
-    });
-});
-</script>
 {% endblock %}

@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User, Team, Task, Category, CTFEvent, UserFlagSubmission
+from models import db, User, Team, Task, Category, CTFEvent, UserFlagSubmission, Notification
 from datetime import datetime, timedelta
 import os
-from models import db, User, Team, CTFEvent, Category, Task, UserFlagSubmission
-from datetime import datetime, timedelta
+import time
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-change-this-to-something-secure'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -149,9 +149,11 @@ def create_team():
     return redirect(url_for('team_dashboard'))
 
 @app.route('/admin/event/delete/<int:event_id>')
+@login_required
 def delete_event(event_id):
     """Delete a CTF event and all associated data"""
-    from models import User, Team, CTFEvent, Category, Task, UserFlagSubmission
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
 
     event = CTFEvent.query.get_or_404(event_id)
     event_name = event.name
@@ -182,11 +184,232 @@ def delete_event(event_id):
     flash(f'✅ Event "{event_name}" deleted successfully! Removed {categories_count} categories and {tasks_count} tasks.', 'success')
     return redirect(url_for('admin_dashboard'))
 
+# ============= EDIT FUNCTIONS =============
+
+# Edit Event
+@app.route('/admin/edit_event/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def edit_event(event_id):
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    event = CTFEvent.query.get_or_404(event_id)
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        duration = request.form.get('duration')
+
+        duration_map = {
+            '30sec': 30,
+            '1min': 60,
+            '1hour': 3600,
+            '24hours': 86400,
+            '48hours': 172800
+        }
+
+        event.name = name
+        event.duration_seconds = duration_map.get(duration, 3600)
+        db.session.commit()
+        flash(f'✅ Event "{event.name}" updated successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('edit_event.html', event=event)
+
+# Edit Category
+@app.route('/admin/edit_category/<int:category_id>', methods=['GET', 'POST'])
+@login_required
+def edit_category(category_id):
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    category = Category.query.get_or_404(category_id)
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        event_id = request.form.get('event_id')
+
+        # Check if another category with same name exists for this event
+        existing = Category.query.filter(
+            Category.name == name,
+            Category.ctf_event_id == event_id,
+            Category.id != category_id
+        ).first()
+
+        if existing:
+            flash(f'⚠️ Category "{name}" already exists for this CTF event!', 'danger')
+        else:
+            category.name = name
+            category.ctf_event_id = event_id
+            db.session.commit()
+            flash(f'✅ Category "{category.name}" updated successfully!', 'success')
+            return redirect(url_for('admin_dashboard'))
+
+    events = CTFEvent.query.all()
+    return render_template('edit_category.html', category=category, events=events)
+
+# Edit Task
+@app.route('/admin/edit_task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def edit_task(task_id):
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    task = Task.query.get_or_404(task_id)
+
+    if request.method == 'POST':
+        # Get form data
+        name = request.form.get('name')
+        description = request.form.get('description')
+        endpoint = request.form.get('endpoint')
+        flag = request.form.get('flag')
+        points = request.form.get('points')
+        category_id = request.form.get('category_id')
+
+        # Update task
+        task.name = name
+        task.description = description
+        task.endpoint = endpoint
+        task.flag = flag
+        task.points = int(points)
+        task.category_id = category_id
+
+        db.session.commit()
+        flash(f'✅ Task "{task.name}" updated successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    # GET request - show edit form
+    categories = Category.query.all()
+    return render_template('edit_task.html', task=task, categories=categories)
+
+# Get Task Data for AJAX
+@app.route('/admin/task/data/<int:task_id>')
+@login_required
+def get_task_data(task_id):
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    task = Task.query.get_or_404(task_id)
+    return jsonify({
+        'id': task.id,
+        'name': task.name,
+        'description': task.description,
+        'endpoint': task.endpoint,
+        'flag': task.flag,
+        'points': task.points,
+        'category_id': task.category_id
+    })
+
+# ============= END EDIT FUNCTIONS =============
+
+# ============= NOTIFICATION / HINT FUNCTIONS =============
+
+@app.route('/admin/send_hint', methods=['GET', 'POST'])
+@login_required
+def send_hint():
+    """Admin page to send hints/notifications to users"""
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        message = request.form.get('message')
+        task_id = request.form.get('task_id')
+
+        if not title or not message:
+            flash('Title and message are required!', 'danger')
+            return redirect(url_for('send_hint'))
+
+        # Create notification
+        notification = Notification(
+            title=title,
+            message=message,
+            hint_for_task_id=int(task_id) if task_id and task_id != '' else None,
+            created_by=current_user.id
+        )
+        db.session.add(notification)
+        db.session.commit()
+
+        flash(f'✅ Hint/Notification sent successfully!', 'success')
+        return redirect(url_for('send_hint'))
+
+    # GET request - show form
+    tasks = Task.query.all()
+    return render_template('send_hint.html', tasks=tasks)
+
+@app.route('/admin/get_hint_data/<int:task_id>')
+@login_required
+def get_hint_data(task_id):
+    """Get hint data for a specific task"""
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    task = Task.query.get_or_404(task_id)
+
+    # Get existing hints for this task
+    hints = Notification.query.filter_by(
+        hint_for_task_id=task_id
+    ).order_by(Notification.created_at.desc()).all()
+
+    hint_data = [{
+        'id': h.id,
+        'title': h.title,
+        'message': h.message,
+        'created_at': h.created_at.strftime('%Y-%m-%d %H:%M')
+    } for h in hints]
+
+    return jsonify({
+        'task_name': task.name,
+        'hints': hint_data
+    })
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    """View all notifications for current user"""
+    notifications = Notification.query.order_by(Notification.created_at.desc()).all()
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/api/notifications')
+@login_required
+def get_notifications():
+    """Get all notifications as JSON"""
+    notifications = Notification.query.order_by(Notification.created_at.desc()).all()
+    return jsonify([{
+        'id': n.id,
+        'title': n.title,
+        'message': n.message,
+        'task_name': n.task.name if n.task else None,
+        'created_at': n.created_at.strftime('%Y-%m-%d %H:%M'),
+        'is_read': n.is_read
+    } for n in notifications])
+
+@app.route('/notification/mark_read/<int:notification_id>', methods=['POST'])
+@login_required
+def mark_notification_read(notification_id):
+    """Mark a notification as read"""
+    notification = Notification.query.get_or_404(notification_id)
+    notification.is_read = True
+    notification.read_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/notification/mark_all_read', methods=['POST'])
+@login_required
+def mark_all_notifications_read():
+    """Mark all notifications as read"""
+    Notification.query.update({Notification.is_read: True, Notification.read_at: datetime.utcnow()})
+    db.session.commit()
+    return jsonify({'success': True})
+
+# ============= END NOTIFICATION FUNCTIONS =============
+
 # Optional: Add a route to delete all events (for cleanup)
 @app.route('/admin/event/delete_all', methods=['POST'])
+@login_required
 def delete_all_events():
     """Delete all CTF events (use with caution)"""
-    from models import CTFEvent, Category, Task, UserFlagSubmission
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
 
     if request.form.get('confirm') != 'DELETE_ALL':
         flash('Confirmation required. Type "DELETE_ALL" to confirm.', 'danger')
@@ -589,6 +812,29 @@ def create_category():
 
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/delete_category/<int:category_id>')
+@login_required
+def delete_category(category_id):
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    category = Category.query.get_or_404(category_id)
+    category_name = category.name
+
+    # Delete all tasks in this category
+    tasks = Task.query.filter_by(category_id=category_id).all()
+    for task in tasks:
+        # Delete submissions for each task
+        UserFlagSubmission.query.filter_by(task_id=task.id).delete()
+        db.session.delete(task)
+
+    # Delete the category
+    db.session.delete(category)
+    db.session.commit()
+
+    flash(f'✅ Category "{category_name}" and all its tasks deleted successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/create_task', methods=['POST'])
 @login_required
 def create_task():
@@ -653,11 +899,35 @@ def get_ctf_status():
             })
     return jsonify({'active': False})
 
+@app.route('/terms')
+@login_required
+def terms():
+    """Show terms and conditions page"""
+    return render_template('terms.html', username=current_user.username)
+
+@app.route('/agree_terms', methods=['POST'])
+@login_required
+def agree_terms():
+    """Mark that user has agreed to terms"""
+    current_user.agreed_to_terms = True
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/check_terms')
+@login_required
+def check_terms():
+    """Check if user has agreed to terms"""
+    return jsonify({'agreed': current_user.agreed_to_terms})
+
 @app.route('/challenges')
 @login_required
 def challenges():
     if current_user.is_admin:
         return redirect(url_for('admin_dashboard'))
+
+    # Check if user has agreed to terms
+    if not current_user.agreed_to_terms:
+        return redirect(url_for('terms'))
 
     active_event = CTFEvent.query.filter_by(is_active=True).first()
 
@@ -674,7 +944,7 @@ def challenges():
 
     categories = Category.query.filter_by(ctf_event_id=active_event.id).all()
 
-    # ✅ FIX: get all solved tasks once
+    # Get all solved tasks once
     solved = UserFlagSubmission.query.filter_by(
         user_id=current_user.id,
         is_correct=True
@@ -688,7 +958,7 @@ def challenges():
         tasks = Task.query.filter_by(category_id=category.id).all()
 
         for task in tasks:
-            task.submitted = task.id in solved_task_ids  # ✅ FIX
+            task.submitted = task.id in solved_task_ids
 
         categories_with_tasks.append({
             'category': category,

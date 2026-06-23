@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-warning">
+                <h4 class="mb-0 text-dark">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Task: {{ task.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">Task Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ task.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required>{{ task.description }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="endpoint" class="form-label fw-bold">Endpoint (optional)</label>
+                        <input type="text" class="form-control" id="endpoint" name="endpoint" value="{{ task.endpoint or '' }}">
+                        <small class="text-muted">URL or file path for the challenge</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="flag" class="form-label fw-bold">Flag</label>
+                            <input type="text" class="form-control font-monospace" id="flag" name="flag" value="{{ task.flag }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="points" class="form-label fw-bold">Points</label>
+                            <input type="number" class="form-control" id="points" name="points" value="{{ task.points }}" required min="1">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label fw-bold">Category</label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if category.id == task.category_id %}selected{% endif %}>
+                                {{ category.name }} ({{ category.ctf_event.name if category.ctf_event else 'No Event' }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-save me-1"></i> Update Task
+                        </button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+</style>
+{% endblock %}

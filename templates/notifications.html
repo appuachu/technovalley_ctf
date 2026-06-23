@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-bell me-2"></i>Notifications
+                </h4>
+                {% if notifications %}
+                <button class="btn btn-sm btn-outline-light" onclick="markAllRead()">
+                    <i class="bi bi-check-all me-1"></i> Mark All Read
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if notifications %}
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item {% if not notification.is_read %}bg-light border-start border-4 border-info{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h5 class="mb-1">
+                                        {{ notification.title }}
+                                        {% if not notification.is_read %}
+                                        <span class="badge bg-info ms-2">New</span>
+                                        {% endif %}
+                                    </h5>
+                                    {% if notification.task %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-flag me-1"></i>{{ notification.task.name }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <p class="mb-1 mt-2">{{ notification.message }}</p>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    {{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% if notification.created_by %}
+                                    • Sent by: {{ notification.creator.username }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="ms-3">
+                                {% if not notification.is_read %}
+                                <button class="btn btn-sm btn-outline-info" onclick="markRead({{ notification.id }})">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-bell-slash fs-1 text-muted"></i>
+                    <h5 class="text-muted mt-3">No notifications yet</h5>
+                    <p class="text-muted">Hints and notifications will appear here</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+.list-group-item {
+    transition: all 0.2s ease;
+}
+.list-group-item:hover {
+    background-color: #f8fafc !important;
+}
+</style>
+
+<script>
+function markRead(notificationId) {
+    fetch(`/notification/mark_read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function markAllRead() {
+    if (confirm('Mark all notifications as read?')) {
+        fetch('/notification/mark_all_read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

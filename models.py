@@ -11,6 +11,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    agreed_to_terms = db.Column(db.Boolean, default=False)
     is_individual = db.Column(db.Boolean, default=False)
     individual_name = db.Column(db.String(100), nullable=True)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id', use_alter=True), nullable=True)
@@ -84,4 +85,20 @@ class UserFlagSubmission(db.Model):
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_correct = db.Column(db.Boolean, default=False)
 
-    
+# ============= NEW NOTIFICATION MODEL =============
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    hint_for_task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+    read_at = db.Column(db.DateTime, nullable=True)
+
+    # Relationships
+    task = db.relationship('Task', backref='notifications', foreign_keys=[hint_for_task_id])
+    creator = db.relationship('User', foreign_keys=[created_by], backref='created_notifications')
+
+    def __repr__(self):
+        return f'<Notification {self.title}>'

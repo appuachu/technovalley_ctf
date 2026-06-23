@@ -1,214 +1,249 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        {% if current_user.is_individual %}
-            <!-- Individual User Dashboard -->
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i> Individual Dashboard</h4>
+<div class="container px-0">
+    <!-- Page Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <i class="bi bi-speedometer2 fs-1 text-gradient"></i>
+        <div>
+            <h2 class="fw-bold mb-0">Dashboard</h2>
+            <p class="text-muted small">Manage your participation and track the competition</p>
+        </div>
+    </div>
+
+    {% if current_user.is_individual %}
+        <!-- ===== INDIVIDUAL DASHBOARD ===== -->
+        <div class="card-premium">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-person-badge me-3 fs-4"></i>
+                <h4 class="mb-0 fw-semibold">Individual Dashboard</h4>
+                <span class="badge bg-success bg-opacity-20 text-success ms-3 px-3 py-2 rounded-pill">Solo</span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <h5 class="mb-0">Welcome back, <span class="text-success fw-bold">{{ current_user.individual_name }}</span>!</h5>
+                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill"><i class="bi bi-person me-1"></i> Individual</span>
                 </div>
-                <div class="card-body">
-                    <h5>Welcome back, <span class="text-success">{{ current_user.individual_name }}</span>!</h5>
-                    <p class="text-muted">You are competing as an individual participant.</p>
+                <p class="text-muted">You are competing as an individual participant. Solve challenges and climb the leaderboard.</p>
 
-                    {% if active_event %}
-                        {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
-                        {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
+                {% if active_event %}
+                    {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
+                    {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
 
-                        {% if is_ctf_ended %}
-                            <div class="alert alert-danger">
-                                <i class="bi bi-clock-history"></i> <strong>CTF Ended!</strong> The competition has finished. You can still view the scoreboard but cannot submit flags.
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle-fill"></i> <strong>Active CTF Event:</strong> {{ active_event.name }}
-                                <div id="timer" class="mt-2 h4"></div>
-                            </div>
-                        {% endif %}
-
-                        <div class="text-center mt-4">
-                            {% if not is_ctf_ended %}
-                                <a href="{{ url_for('challenges') }}" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-flag"></i> View Challenges
-                                </a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-lg" disabled>
-                                    <i class="bi bi-clock"></i> CTF Ended
-                                </button>
-                            {% endif %}
-                            <a href="{{ url_for('scoreboard') }}" class="btn btn-info btn-lg">
-                                <i class="bi bi-trophy"></i> View Scoreboard
-                            </a>
+                    {% if is_ctf_ended %}
+                        <div class="alert-premium alert-danger d-flex align-items-center">
+                            <i class="bi bi-clock-history me-3 fs-5"></i>
+                            <div><strong>CTF Ended!</strong> The competition has finished. You can still view the scoreboard but cannot submit flags.</div>
                         </div>
                     {% else %}
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle-fill"></i> No active CTF event at the moment. Please wait for the admin to start an event.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-        {% elif current_user.team_id %}
-            <!-- Team User Dashboard -->
-            {% set team = Team.query.get(current_user.team_id) %}
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i> Team Dashboard - {{ team.team_name }}</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="p-3 bg-light rounded-3">
-                                <h5><i class="bi bi-code-square"></i> Team Code:</h5>
-                                <code class="bg-dark text-white p-2 rounded d-inline-block">{{ team.team_code }}</code>
-                                <p class="text-muted small mt-2">Share this code with your teammates to join!</p>
+                        <div class="alert-premium alert-info d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+                            <div>
+                                <strong>Active CTF Event:</strong> {{ active_event.name }}
+                                <div id="timer" class="mt-1 h4 fw-bold"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h5><i class="bi bi-people"></i> Team Members ({{ team.members|length }}/3):</h5>
-                            <ul class="list-group">
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        {% if not is_ctf_ended %}
+                            <a href="{{ url_for('challenges') }}" class="btn btn-premium-primary btn-lg px-5">
+                                <i class="bi bi-flag me-2"></i> View Challenges
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg px-5" disabled>
+                                <i class="bi bi-clock me-2"></i> CTF Ended
+                            </button>
+                        {% endif %}
+                        <a href="{{ url_for('scoreboard') }}" class="btn btn-premium-info btn-lg px-5">
+                            <i class="bi bi-trophy me-2"></i> Scoreboard
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert-premium alert-warning d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                        <div>No active CTF event at the moment. Please wait for the admin to start an event.</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    {% elif current_user.team_id %}
+        <!-- ===== TEAM DASHBOARD ===== -->
+        {% set team = Team.query.get(current_user.team_id) %}
+        <div class="card-premium">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-people-fill me-3 fs-4"></i>
+                <h4 class="mb-0 fw-semibold">Team Dashboard</h4>
+                <span class="badge bg-primary bg-opacity-20 text-primary ms-3 px-3 py-2 rounded-pill">{{ team.team_name }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Team Code -->
+                    <div class="col-md-6">
+                        <div class="p-4 bg-light rounded-4 h-100">
+                            <h5 class="fw-semibold"><i class="bi bi-code-square me-2 text-primary"></i>Team Code</h5>
+                            <code class="bg-dark text-white p-3 rounded-3 d-inline-block fs-5 fw-bold">{{ team.team_code }}</code>
+                            <p class="text-muted small mt-3 mb-0">Share this code with your teammates to join!</p>
+                        </div>
+                    </div>
+                    <!-- Team Members -->
+                    <div class="col-md-6">
+                        <div class="p-4 bg-light rounded-4 h-100">
+                            <h5 class="fw-semibold"><i class="bi bi-people me-2 text-info"></i>Team Members <span class="badge bg-secondary rounded-pill ms-2">{{ team.members|length }}/3</span></h5>
+                            <ul class="list-group list-group-flush bg-transparent">
                                 {% for member in team.members %}
-                                    <li class="list-group-item d-flex align-items-center">
+                                    <li class="list-group-item bg-transparent d-flex align-items-center ps-0">
                                         <i class="bi bi-person-check-fill text-success me-2"></i>
                                         {{ member.username }}
+                                        {% if member.id == team.created_by %}
+                                            <span class="badge bg-warning bg-opacity-20 text-warning ms-2 px-2 py-1 rounded-pill">Captain</span>
+                                        {% endif %}
                                     </li>
                                 {% endfor %}
                             </ul>
                         </div>
                     </div>
+                </div>
 
-                    {% if active_event %}
-                        {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
-                        {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
+                {% if active_event %}
+                    {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
+                    {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
 
-                        {% if is_ctf_ended %}
-                            <div class="alert alert-danger mt-3">
-                                <i class="bi bi-clock-history"></i> <strong>CTF Ended!</strong> The competition has finished.
+                    {% if is_ctf_ended %}
+                        <div class="alert-premium alert-danger d-flex align-items-center mt-4">
+                            <i class="bi bi-clock-history me-3 fs-5"></i>
+                            <div><strong>CTF Ended!</strong> The competition has finished.</div>
+                        </div>
+                    {% else %}
+                        <div class="alert-premium alert-info d-flex align-items-center mt-4">
+                            <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+                            <div>
+                                <strong>Active CTF Event:</strong> {{ active_event.name }}
+                                <div id="timer" class="mt-1 h4 fw-bold"></div>
                             </div>
-                        {% else %}
-                            <div class="alert alert-info mt-3">
-                                <i class="bi bi-info-circle-fill"></i> <strong>Active CTF Event:</strong> {{ active_event.name }}
-                                <div id="timer" class="mt-2 h4"></div>
-                            </div>
-                        {% endif %}
+                        </div>
+                    {% endif %}
 
-                        <div class="text-center mt-4">
-                            {% if not is_ctf_ended %}
-                                <a href="{{ url_for('challenges') }}" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-flag"></i> View Challenges
-                                </a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-lg" disabled>
-                                    <i class="bi bi-clock"></i> CTF Ended
-                                </button>
-                            {% endif %}
-                            <a href="{{ url_for('scoreboard') }}" class="btn btn-info btn-lg">
-                                <i class="bi bi-trophy"></i> View Scoreboard
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        {% if not is_ctf_ended %}
+                            <a href="{{ url_for('challenges') }}" class="btn btn-premium-primary btn-lg px-5">
+                                <i class="bi bi-flag me-2"></i> View Challenges
                             </a>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-warning mt-3">
-                            <i class="bi bi-exclamation-triangle-fill"></i> No active CTF event at the moment.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-        {% else %}
-            <!-- User hasn't chosen participation mode yet -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="bi bi-star-fill me-2"></i> Welcome, {{ current_user.username }}!</h4>
-                </div>
-                <div class="card-body">
-                    <p class="lead">Choose how you want to participate in the competition:</p>
-
-                    {% if active_event %}
-                        {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
-                        {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
-
-                        {% if is_ctf_ended %}
-                            <div class="alert alert-danger">
-                                <i class="bi bi-clock-history"></i> The CTF has already ended. You cannot participate in this event.
-                            </div>
                         {% else %}
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle-fill"></i> <strong>Active CTF:</strong> {{ active_event.name }} is currently running!
-                            </div>
+                            <button class="btn btn-secondary btn-lg px-5" disabled>
+                                <i class="bi bi-clock me-2"></i> CTF Ended
+                            </button>
                         {% endif %}
-                    {% endif %}
-
-                    {% if not active_event or (active_event and not is_ctf_ended) %}
-                    <div class="row mt-4 g-4">
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body text-center p-4">
-                                    <div class="mb-3">
-                                        <i class="bi bi-person-circle display-1 text-primary"></i>
-                                    </div>
-                                    <h5 class="card-title">Individual Participant</h5>
-                                    <p class="card-text text-muted">Compete alone and show your skills</p>
-                                    <form action="{{ url_for('create_individual') }}" method="POST">
-                                        <div class="mb-3">
-                                            <input type="text" class="form-control" name="individual_name" placeholder="Your display name" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-success px-4">Participate as Individual</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body text-center p-4">
-                                    <div class="mb-3">
-                                        <i class="bi bi-people-fill display-1 text-info"></i>
-                                    </div>
-                                    <h5 class="card-title">Team Participation</h5>
-                                    <p class="card-text text-muted">Create or join a team (Max 3 members)</p>
-
-                                    <button class="btn btn-primary mb-2 px-4" data-bs-toggle="modal" data-bs-target="#createTeamModal">
-                                        <i class="bi bi-plus-circle"></i> Create New Team
-                                    </button>
-                                    <br>
-                                    <button class="btn btn-info px-4" data-bs-toggle="modal" data-bs-target="#joinTeamModal">
-                                        <i class="bi bi-box-arrow-in-right"></i> Join Existing Team
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="{{ url_for('scoreboard') }}" class="btn btn-premium-info btn-lg px-5">
+                            <i class="bi bi-trophy me-2"></i> Scoreboard
+                        </a>
                     </div>
-                    {% else %}
-                    <div class="alert alert-danger text-center">
-                        <i class="bi bi-exclamation-octagon-fill"></i> This CTF event has ended. No new participants can join.
+                {% else %}
+                    <div class="alert-premium alert-warning d-flex align-items-center mt-4">
+                        <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                        <div>No active CTF event at the moment.</div>
                     </div>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
-        {% endif %}
-    </div>
+        </div>
+
+    {% else %}
+        <!-- ===== CHOOSE PARTICIPATION MODE ===== -->
+        <div class="card-premium">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-star-fill me-3 fs-4"></i>
+                <h4 class="mb-0 fw-semibold">Welcome, {{ current_user.username }}!</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead fw-normal mb-4">Choose how you want to participate in the competition:</p>
+
+                {% if active_event %}
+                    {% set end_time = active_event.start_time + timedelta(seconds=active_event.duration_seconds) if active_event.start_time else None %}
+                    {% set is_ctf_ended = end_time and datetime.utcnow() > end_time %}
+
+                    {% if is_ctf_ended %}
+                        <div class="alert-premium alert-danger d-flex align-items-center">
+                            <i class="bi bi-clock-history me-3 fs-5"></i>
+                            <div>The CTF has already ended. You cannot participate in this event.</div>
+                        </div>
+                    {% else %}
+                        <div class="alert-premium alert-info d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+                            <div><strong>Active CTF:</strong> {{ active_event.name }} is currently running!</div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if not active_event or (active_event and not is_ctf_ended) %}
+                <div class="row g-4 mt-2">
+                    <!-- Individual -->
+                    <div class="col-md-6">
+                        <div class="card-feature-choice text-center p-4 h-100">
+                            <div class="feature-icon mb-4" style="background: rgba(59,130,246,0.10); color: #3b82f6;">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <h5 class="fw-bold">Individual Participant</h5>
+                            <p class="text-muted small">Compete alone and show your skills</p>
+                            <form action="{{ url_for('create_individual') }}" method="POST" class="mt-3">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" name="individual_name" placeholder="Your display name" required>
+                                </div>
+                                <button type="submit" class="btn btn-premium-success w-100">
+                                    <i class="bi bi-check-circle me-2"></i> Participate as Individual
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Team -->
+                    <div class="col-md-6">
+                        <div class="card-feature-choice text-center p-4 h-100">
+                            <div class="feature-icon mb-4" style="background: rgba(139,92,246,0.10); color: #8b5cf6;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h5 class="fw-bold">Team Participation</h5>
+                            <p class="text-muted small">Create or join a team (Max 3 members)</p>
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTeamModal">
+                                    <i class="bi bi-plus-circle me-2"></i> Create New Team
+                                </button>
+                                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#joinTeamModal">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i> Join Existing Team
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert-premium alert-danger text-center mt-3">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i> This CTF event has ended. No new participants can join.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 
+<!-- ===== MODALS ===== -->
 <!-- Create Team Modal -->
-<div class="modal fade" id="createTeamModal" tabindex="-1">
+<div class="modal fade modal-premium" id="createTeamModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>Create New Team</h5>
+                <h5 class="modal-title fw-semibold"><i class="bi bi-plus-circle-fill me-2"></i>Create New Team</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ url_for('create_team') }}" method="POST">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
                         <label for="team_name" class="form-label fw-bold">Team Name</label>
-                        <input type="text" class="form-control" name="team_name" placeholder="Enter your team name" required>
+                        <input type="text" class="form-control form-premium" name="team_name" placeholder="Enter your team name" required>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Team</button>
+                    <button type="submit" class="btn btn-premium-primary">Create Team</button>
                 </div>
             </form>
         </div>
@@ -216,24 +251,24 @@
 </div>
 
 <!-- Join Team Modal -->
-<div class="modal fade" id="joinTeamModal" tabindex="-1">
+<div class="modal fade modal-premium" id="joinTeamModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-box-arrow-in-right me-2"></i>Join Existing Team</h5>
+                <h5 class="modal-title fw-semibold"><i class="bi bi-box-arrow-in-right me-2"></i>Join Existing Team</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ url_for('join_team') }}" method="POST">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
                         <label for="team_code" class="form-label fw-bold">Team Code</label>
-                        <input type="text" class="form-control" name="team_code" placeholder="Enter 8-character code" required>
-                        <div class="form-text">Ask your team captain for the team code</div>
+                        <input type="text" class="form-control form-premium" name="team_code" placeholder="Enter 8-character code" required>
+                        <div class="form-text text-muted">Ask your team captain for the team code</div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Join Team</button>
+                    <button type="submit" class="btn btn-premium-primary">Join Team</button>
                 </div>
             </form>
         </div>
@@ -241,6 +276,58 @@
 </div>
 
 <style>
+    /* ----- PREMIUM DASHBOARD STYLES ----- */
+    .text-gradient {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .card-premium .card-header {
+        background: linear-gradient(135deg, #0f1a2e, #19233e);
+        padding: 1.2rem 1.8rem;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        color: #fff;
+    }
+
+    .card-premium .card-header .badge {
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+
+    .badge.bg-success.bg-opacity-20 {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #10b981 !important;
+    }
+    .badge.bg-primary.bg-opacity-20 {
+        background: rgba(59, 130, 246, 0.15) !important;
+        color: #3b82f6 !important;
+    }
+
+    .alert-premium {
+        border-radius: 20px;
+        padding: 1.2rem 1.8rem;
+        border: none;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+    }
+    .alert-premium.alert-info {
+        background: rgba(59, 130, 246, 0.08);
+        border-left: 4px solid #3b82f6;
+        color: #1e3a8a;
+    }
+    .alert-premium.alert-warning {
+        background: rgba(245, 158, 11, 0.08);
+        border-left: 4px solid #f59e0b;
+        color: #78350f;
+    }
+    .alert-premium.alert-danger {
+        background: rgba(239, 68, 68, 0.08);
+        border-left: 4px solid #ef4444;
+        color: #7f1d1d;
+    }
+
     #timer {
         font-family: 'JetBrains Mono', monospace;
         font-weight: 700;
@@ -249,6 +336,77 @@
         background-clip: text;
         color: transparent;
         font-size: 2rem;
+        letter-spacing: 1px;
+    }
+
+    .btn-premium-info {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border: none;
+        color: #fff;
+        border-radius: 60px;
+        font-weight: 600;
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25);
+        transition: all 0.3s;
+    }
+    .btn-premium-info:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.35);
+        color: #fff;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+
+    /* choice cards */
+    .card-feature-choice {
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.6);
+        border-radius: 32px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+    }
+    .card-feature-choice:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 48px -12px rgba(0, 20, 40, 0.10);
+        background: rgba(255,255,255,0.9);
+        border-color: rgba(59,130,246,0.12);
+    }
+    .feature-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto;
+        transition: 0.3s;
+    }
+    .card-feature-choice:hover .feature-icon {
+        transform: scale(1.04);
+    }
+
+    .input-group-text {
+        border-radius: 40px 0 0 40px;
+        border: 1.5px solid #e2e8f0;
+        border-right: none;
+        background: rgba(255,255,255,0.5);
+    }
+    .card-feature-choice .form-control {
+        border-radius: 0 40px 40px 0;
+        border: 1.5px solid #e2e8f0;
+        border-left: none;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(4px);
+    }
+    .card-feature-choice .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+        background: #fff;
+    }
+
+    @media (max-width: 768px) {
+        #timer { font-size: 1.4rem; }
+        .card-premium .card-header { padding: 1rem 1.2rem; }
     }
 </style>
 
@@ -261,10 +419,10 @@ function updateTimer() {
             let seconds = Math.floor(data.time_left % 60);
             $('#timer').text(`${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
         } else if (data.active) {
-            $('#timer').text('CTF Ended - Submissions Disabled');
+            $('#timer').text('⏱ Ended');
             setTimeout(() => location.reload(), 1000);
         } else {
-            $('#timer').text('No Active CTF');
+            $('#timer').text('⏸ Inactive');
         }
     });
 }
